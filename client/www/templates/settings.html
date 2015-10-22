@@ -1,0 +1,14 @@
+<ion-view view-title="Settings" name="settings-view">
+	<ion-content class="padding">
+			<div class="list list-inset">
+				<label class="item item-input">
+					<input type="text" placeholder="Circle Color" ng-model="data.color">
+				</label>
+				<label class="item item-input">
+					<input type="text" placeholder="Stroke Color" ng-model="data.stroke">
+				</label>
+			</div>
+			<button class="button button-block button-calm" ng-click="create()">Save Settings</button>
+			<button class="button button-block button-calm" ng-click="cancel()">Cancel</button>
+	</ion-content>
+</ion-view>
