@@ -1,0 +1,40 @@
+.icon-xl {
+	font-size: 24px;
+}
+
+.icon-list a {
+	float: left;
+	width: 33.33%;
+	color: #387ef5;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding: 15px;
+	font-size: 24px;
+	text-decoration: none;
+	text-align: center;
+}
+
+#leftnav {
+	padding: 10px;
+}
+
+#leftnav a {
+	display: block;
+	text-decoration: none;
+	color: #999999;
+	height: 24px;
+	font-size: 12px;
+}
+
+#leftnav-search input {
+	float: left;
+}
+
+#leftnav-search label a.btn {
+    display: block;
+    font-size: 24px;
+    height: inherit;
+    padding: 0 10px;
+    color: #000000;
+}

@@ -26,13 +26,23 @@
 				<h1 class="title"></h1>
 			</ion-header-bar>
 			<ion-content>
-				<ul class="list">
+				<div id="leftnav">
 					<!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
-					<a href="#/main/map" class="item active" menu-close>Map</a>
-					<a href="#/main/followers" class="item" menu-close>Followers</a>
-					<a href="#/main/settings" class="item" menu-close>Settings</a>
-					<a href="#/login" class="item" menu-close>Logout</a>
-				</ul>
+					<div id="leftnav-search">
+						<label class="item item-input">
+							<input type="email" placeholder="Search by email..." data-model="search">
+							<a class="btn" href="#"><i class="icon ion-search"></i></a>
+						</label>
+						
+					</div>
+
+					<br class="clearfix" />
+
+					<a href="#/main/map" menu-close><i class="icon ion-map"></i> Home</a>
+					<a href="#/main/settings" menu-close><i class="icon ion-settings"></i> Settings</a>
+					<a href="#/login" menu-close><i class="icon ion-android-exit"></i> Logout</a>
+
+				</div>
 			</ion-content>
 		</ion-side-menu>
 	</ion-side-menus>
