@@ -8,7 +8,8 @@ var UserSchema = new Schema({
 	settings: {
 		circleColor: {type: String},
 		strokeColor: {type: String}
-	}
+	},
+	followers: {type: [Schema.Types.ObjectId]}
 });
 
 module.exports = mongoose.model('User', UserSchema);
