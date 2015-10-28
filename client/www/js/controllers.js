@@ -1,10 +1,14 @@
 var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 	.controller('MainCtrl', function($scope, SearchService) {
 		$scope.data = [];
+		$scope.searchResults = [];
 
 		$scope.search = function() {
 			if ($scope.data.q)
-				console.log(SearchService.Search($scope.data.q));
+				SearchService.Search($scope.data.q).then(function(data) {
+					console.log(data.data);
+					$scope.searchResults = data.data.result;
+				});
 		}
 	})
 

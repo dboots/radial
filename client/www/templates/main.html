@@ -34,6 +34,12 @@
 							<a class="btn" ng-click="search()"><i class="icon ion-search"></i></a>
 						</div>
 						
+						<div ng-repeat="result in searchResults">
+							{{result.email}}
+						</div>
+						<div>
+							<p>{{searchResults}}</p>
+						</div>
 					</div>
 
 					<br class="clearfix" />

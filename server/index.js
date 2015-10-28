@@ -172,8 +172,17 @@ api.get('/', function(req, res) {
 
 api.route('/users')
 	.get(function(req, res) {
-		console.log(req.query);
-		console.log('users get');
+		var query = req.query.q;
+
+		User.find({'email': query}, '_id, email', function(err, users) {
+			if (err)
+				console.log(err);
+
+			res.json({
+				success: true,
+				result: users
+			})
+		})
 	}
 );
 
