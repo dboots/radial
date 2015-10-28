@@ -170,37 +170,38 @@ api.get('/', function(req, res) {
 //-- Create new User from email/password POST
 //-- ***
 
+api.route('/users')
+	.get(function(req, res) {
+		console.log(req.query);
+		console.log('users get');
+	}
+);
+
 api.route('/users/:user_id')
 	.put(function(req, res) {
 		User.findById(req.params.user_id, function(err, user) {
 			if (err)
-				res.send(err);
+				console.log(err);
+
 
 			if (user) {
 				newEvent = req.body.user.event_add;
 				user.email = req.body.user.email;
 
-				
-
-				//-- TODO: Move to model method. If a User document doesn't contain
-				//-- an Events node, create it.
-				if (!user.events)
-					User.update({'events':[]});
-
-				if (newEvent)
+				if (newEvent) {
+					newEvent['_id'] = new ObjectId();
 					user.events.push(newEvent);
+				}
 
 				user.settings.circleColor = '#000000';
 
-
-				console.log(user);
-
 				user.save(function(err) {
 					if (err)
-						res.send(err);
+						console.log(err);
 
 					//-- Broadcast newly saved event
 					//-- TODO: Broadcast to User's followers only
+					//-- TODO: Create and fire events specific to what was updated.
 					io.emit('event_add', newEvent);
 
 					res.json({
@@ -251,20 +252,6 @@ io.on('connection', function(socket){
 
 	socket.on('disconnect', function(){
 		disconnect();
-	});
-
-	socket.on('event_add', function(latLng) {
-		var event = new Event();
-
-		event.latitude = latLng.latitude;
-		event.longitude = latLng.longitude;
-
-		event.save(function(err) {
-			if (err) throw err;
-
-			//-- TODO: Tailor audience to just Followers
-			io.emit('event_add', latLng);
-		});
 	});
 });
 

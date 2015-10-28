@@ -29,10 +29,10 @@
 				<div id="leftnav">
 					<!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
 					<div id="leftnav-search">
-						<label class="item item-input">
-							<input type="email" placeholder="Search by email..." data-model="search">
-							<a class="btn" href="#"><i class="icon ion-search"></i></a>
-						</label>
+						<div class="item item-input">
+							<input type="text" placeholder="Search by email..." ng-model="data.q">
+							<a class="btn" ng-click="search()"><i class="icon ion-search"></i></a>
+						</div>
 						
 					</div>
 

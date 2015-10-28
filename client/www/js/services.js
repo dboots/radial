@@ -3,14 +3,17 @@ angular.module('starter.services', [])
 .factory('$global', function() {
 	//-- TODO: Debug local/remote testing. Doesn't seem to be connecting to proper urls when local and/or emulating
 	var proxy = 'http://localhost:1337/';
+	var currentPlatform = ionic.Platform.platform();
+
 	//var isLocal = top.location.toString().indexOf('localhost');
-	var isLocal = (window.cordova) ? false : true;
+	var isLocal = (currentPlatform == 'macintel') ? true : false;
 	var serverUrl = (isLocal) ? 'http://localhost:4343' : 'http://radial-52832.onmodulus.net';
 
 	var apiSuffix = '/v1/api';
 	var apiUrl = serverUrl + apiSuffix;
 
 	var _config = {
+		platform: currentPlatform,
 		api: apiUrl,
 		server: serverUrl,
 		local: isLocal
@@ -126,21 +129,25 @@ angular.module('starter.services', [])
 		PlotEvents: function(my_events) {
 			for(var i = 0, len = my_events.length; i < len; i++) {
 				var latLng = L.latLng(my_events[i].latitude, my_events[i].longitude);
-				MapService.Circle(latLng, null);
+				MapService.Circle(latLng, null, my_events[i]._id);
 			}
 		},
 
-		Circle: function(my_latLng, my_color) {
+		Circle: function(my_latLng, my_color, my_id) {
 			//-- 1 mile = 1609.34 meters
-			var c = L.circle(my_latLng, 800, {
-				stroke: false,
-				color: '#DEDEDE',
-				fillOpacity: 0.8
-			}).addTo(_map);
+			if (my_latLng) {
+				var c = L.circle(my_latLng, 800, {
+					stroke: false,
+					color: '#DEDEDE',
+					fillOpacity: 0.8
+				}).addTo(_map);
 
-			c.on('click', function(e) {
-				$state.go('main.event');
-			});
+				c.on('click', function(e) {
+					$state.go('main.event', {
+						'id': my_id
+					});
+				});
+			}
 		},
 
 		Error: function(err) {
@@ -232,17 +239,72 @@ angular.module('starter.services', [])
 			}
 		},
 
-		AddEvent: function(my_position) {
-			var newEvent = {
-				latitude: my_position.latlng.lat,
-				longitude: my_position.latlng.lng
-			};
+		AddEvent: function(my_event) {
+			console.log(my_event);
+			if (my_event) {
+				var newEvent = {
+					latitude: my_event.latitude,
+					longitude: my_event.longitude,
+					title: my_event.title,
+					description: my_event.description,
+					startDate: my_event.startDate,
+					endDate: my_event.endDate
+				};
 
-			_user['event_add'] = newEvent;
+				_user['event_add'] = newEvent;
+				UserService.Update(_user);
 
-			UserService.Update(_user);
+				return true;
+			} else {
+				return false;
+			}
+		},
+
+		GetEvent: function(my_eventId) {
+			console.log(my_eventId);
+			console.log(_user);
+			var evt = {};
+
+			for(var i = 0, len = _user['events']; i < len; i++) {
+				console.log('checking user event:');
+				console.log(_user['events'][i]);
+			}
+
+			return evt;
 		}
 	}
 
 	return UserService;
+})
+
+.service('EventService', function($state) {
+	var _latlng;
+	
+	var EventService = {
+		Latlng: function(my_latlng) {
+			if (my_latlng)
+				_latlng = my_latlng;
+
+			return _latlng;
+		}
+	};
+
+	return EventService;
+})
+
+.factory('SearchService', function($global, $http) {
+	var SearchService = {
+		Search: function(my_query) {
+			if (my_query) {
+				return $http.get($global.config('api') + '/users', {
+					params: {
+						q: my_query,
+						token: window.localStorage['token']
+					}
+				});
+			}
+		}
+	};
+
+	return SearchService;
 });

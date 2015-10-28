@@ -31,10 +31,11 @@
 	float: left;
 }
 
-#leftnav-search label a.btn {
+#leftnav-search .item-input a.btn {
     display: block;
     font-size: 24px;
     height: inherit;
     padding: 0 10px;
     color: #000000;
+    cursor: pointer;
 }

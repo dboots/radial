@@ -43,31 +43,30 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 		.state('main', {
 			url: '/main',
 			abstract: true,
-			templateUrl: 'templates/main.html'
-			//controller: 'MainCtrl'
+			templateUrl: 'templates/main.html',
+			controller: 'MainCtrl'
 		})
 
 		.state('main.map', {
 			url: '/map',
-				views: {
-					'mainContent': {
-						templateUrl: 'templates/map.html',
-						controller: 'MapCtrl'
-					}
+			views: {
+				'mainContent': {
+					templateUrl: 'templates/map.html',
+					controller: 'MapCtrl'
 				}
 			}
-		)
+		})
 
 		.state('main.event', {
-			url: '/event',
-				views: {
-					'mainContent': {
-						templateUrl: 'templates/event.html',
-						controller: 'EventCtrl'
-					}
+			url: '/event/:id',
+			views: {
+				'mainContent': {
+					templateUrl: 'templates/event.html',
+					controller: 'EventCtrl'
 				}
-			}
-		)
+			},
+			params: {'id': null}
+		})
 
 		.state('main.settings', {
 			url: '/settings',
