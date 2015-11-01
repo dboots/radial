@@ -173,16 +173,19 @@ api.get('/', function(req, res) {
 api.route('/users')
 	.get(function(req, res) {
 		var query = req.query.q;
+		var uid = req.query.uid;
 
-		User.find({'email': query}, '_id, email', function(err, users) {
-			if (err)
-				console.log(err);
+		if (query) {
+			User.find({'email': query, '_id': {$ne: uid}}, '_id, email', function(err, users) {
+				if (err)
+					console.log(err);
 
-			res.json({
-				success: true,
-				result: users
+				res.json({
+					success: true,
+					result: users
+				})
 			})
-		})
+		}
 	}
 );
 

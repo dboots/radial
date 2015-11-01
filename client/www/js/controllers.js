@@ -1,14 +1,27 @@
 var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
-	.controller('MainCtrl', function($scope, SearchService) {
+	.controller('MainCtrl', function($scope, SearchService, UserService, $timeout) {
 		$scope.data = [];
 		$scope.searchResults = [];
+		searchTimeout = true;
 
 		$scope.search = function() {
-			if ($scope.data.q)
-				SearchService.Search($scope.data.q).then(function(data) {
-					console.log(data.data);
+			if ($scope.data.q && searchTimeout) {
+				//-- Send uid with search request to exclude requesting user.
+				var uid = UserService.User()._id;
+
+				//-- This will be reset to true and allow another search request after the
+				//-- above $timeout() is finished.
+				searchTimeout = false;
+
+				$timeout(function() {
+					searchTimeout = true;
+					console.log('searchTimeout: ' + searchTimeout);
+				}, 1000);
+
+				SearchService.Search($scope.data.q, uid).then(function(data) {
 					$scope.searchResults = data.data.result;
 				});
+			}
 		}
 	})
 
@@ -27,7 +40,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				title: 'Debug',
 				template: 'Platform: ' + currentPlatform + '<br />Using ' + $global.config('server') + ' to connect.',
 				buttons: [
-					{ text: 'Try Again' }
+					{ text: 'Thank you debug fairy!' }
 				]
 			}) //-- end $iconicPopup()
 		});
@@ -98,15 +111,20 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 			data.map.on('click', function(e) {
 				//-- Store map coords within EventService
 				EventService.Latlng(e.latlng);
-				$state.go('main.event');
+				$state.go('main.eventAdd');
 			});
 		});
 
 		$global.socket().on('event_add', function(my_event) {
 			console.log('event_add triggered');
 			var latLng = L.latLng(my_event.latitude, my_event.longitude);
-			MapService.Circle(latLng, null, my_event._id);
+			MapService.Circle(latLng, null, my_event);
 		});
+	})
+
+	.controller('EventDetailCtrl', function($scope, $stateParams, UserService) {
+		var eventId = $stateParams.id;
+		$scope.event = UserService.GetEvent(eventId);
 	})
 
 	.controller('EventCtrl', function($state, $stateParams, $scope, EventService, UserService) {

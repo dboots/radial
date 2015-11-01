@@ -57,12 +57,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 			}
 		})
 
-		.state('main.event', {
-			url: '/event/:id',
+		.state('main.eventAdd', {
+			url: '/event',
 			views: {
 				'mainContent': {
 					templateUrl: 'templates/event.html',
 					controller: 'EventCtrl'
+				}
+			}
+		})
+
+		.state('main.event', {
+			url: '/event/:id',
+			views: {
+				'mainContent': {
+					templateUrl: 'templates/event-detail.html',
+					controller: 'EventDetailCtrl'
 				}
 			},
 			params: {'id': null}

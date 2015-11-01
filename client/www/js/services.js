@@ -129,11 +129,11 @@ angular.module('starter.services', [])
 		PlotEvents: function(my_events) {
 			for(var i = 0, len = my_events.length; i < len; i++) {
 				var latLng = L.latLng(my_events[i].latitude, my_events[i].longitude);
-				MapService.Circle(latLng, null, my_events[i]._id);
+				MapService.Circle(latLng, null, my_events[i]);
 			}
 		},
 
-		Circle: function(my_latLng, my_color, my_id) {
+		Circle: function(my_latLng, my_color, my_event) {
 			//-- 1 mile = 1609.34 meters
 			if (my_latLng) {
 				var c = L.circle(my_latLng, 800, {
@@ -143,9 +143,11 @@ angular.module('starter.services', [])
 				}).addTo(_map);
 
 				c.on('click', function(e) {
-					$state.go('main.event', {
-						'id': my_id
-					});
+					if (my_event._id) {
+						$state.go('main.event', {
+							'id': my_event._id
+						});
+					}
 				});
 			}
 		},
@@ -261,13 +263,12 @@ angular.module('starter.services', [])
 		},
 
 		GetEvent: function(my_eventId) {
-			console.log(my_eventId);
-			console.log(_user);
 			var evt = {};
+			var events = _user['events'];
 
-			for(var i = 0, len = _user['events']; i < len; i++) {
-				console.log('checking user event:');
-				console.log(_user['events'][i]);
+			for(var i = 0, len = events.length; i < len; i++) {
+				if (events[i]['_id'] == my_eventId)
+					evt = events[i];
 			}
 
 			return evt;
@@ -294,11 +295,12 @@ angular.module('starter.services', [])
 
 .factory('SearchService', function($global, $http) {
 	var SearchService = {
-		Search: function(my_query) {
+		Search: function(my_query, my_uid) {
 			if (my_query) {
 				return $http.get($global.config('api') + '/users', {
 					params: {
 						q: my_query,
+						uid: my_uid,
 						token: window.localStorage['token']
 					}
 				});
