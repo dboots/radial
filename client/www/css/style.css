@@ -1,3 +1,7 @@
+.clearfix {
+	clear: both;
+}
+
 .icon-xl {
 	font-size: 24px;
 }
@@ -24,7 +28,7 @@
 	text-decoration: none;
 	color: #999999;
 	height: 24px;
-	font-size: 12px;
+	font-size: 16px;
 }
 
 #leftnav-search input {
@@ -39,3 +43,23 @@
     color: #000000;
     cursor: pointer;
 }
+
+#result-items {
+	padding: 1%;
+	margin: 1%;
+}
+	.result-item {
+		font-size: 18px;
+		padding: 2% 0;
+	}
+
+	.result-name {
+		width: 80%;
+		float: left;
+	}
+
+	.result-action {
+		width: 20%;
+		float: left;
+		text-align: right;
+	}

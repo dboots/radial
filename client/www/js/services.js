@@ -190,11 +190,8 @@ angular.module('starter.services', [])
 
 .factory('RegisterService', ['$global', '$http', function($global, $http) {
 	return {
-		registerUser: function(email, password) {
-			return $http.post($global.config('api') + '/register', {
-				email: email,
-				password: password
-			});
+		registerUser: function(my_data) {
+			return $http.post($global.config('api') + '/register', my_data);
 		}
 	}
 }])
@@ -214,6 +211,7 @@ angular.module('starter.services', [])
 
 		logout: function() {
 			window.localStorage['token'] = null;
+			_user = null;
 
 			if ($global.socket()) {
 				$global.socket().disconnect();

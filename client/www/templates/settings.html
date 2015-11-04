@@ -1,14 +1,21 @@
-<ion-view view-title="Settings" name="settings-view">
+<ion-view view-title="Profile" name="profile-view">
 	<ion-content class="padding">
 			<div class="list list-inset">
+				<div class="item item-input">
+					<input type="text" placeholder="First Name" ng-model="user.fname">
+					<input type="text" placeholder="Last Name" ng-model="user.lname">
+				</div>
 				<label class="item item-input">
-					<input type="text" placeholder="Circle Color" ng-model="data.color">
+					<input type="text" placeholder="Email Address" ng-model="user.email">
 				</label>
 				<label class="item item-input">
-					<input type="text" placeholder="Stroke Color" ng-model="data.stroke">
+					<input type="text" placeholder="Circle Color" ng-model="user.settings.circleColor">
+				</label>
+				<label class="item item-input">
+					<input type="text" placeholder="Stroke Color" ng-model="user.settings.strokeColor">
 				</label>
 			</div>
-			<button class="button button-block button-calm" ng-click="create()">Save Settings</button>
+			<button class="button button-block button-calm" ng-click="save()">Save Settings</button>
 			<button class="button button-block button-calm" ng-click="cancel()">Cancel</button>
 	</ion-content>
 </ion-view>

@@ -83,9 +83,15 @@ api.post('/register', function(req, res, next) {
 	//-- TODO: Add User model validations
 
 	var user = new User();
-	user.email = req.body.email;
+	var data = req.body;
 
-	bcrypt.hash(req.body.password, 10, function(err, hash) {
+	user.email = data.email;
+	user.fname = data.fname;
+	user.lname = data.lname;
+
+	console.log(data);
+
+	bcrypt.hash(data.password, 10, function(err, hash) {
 		user.password = hash;
 	
 		user.save(function(err, user) {
@@ -176,7 +182,7 @@ api.route('/users')
 		var uid = req.query.uid;
 
 		if (query) {
-			User.find({'email': query, '_id': {$ne: uid}}, '_id, email', function(err, users) {
+			User.find({'email': query, '_id': {$ne: uid}}, '_id email fname lname', function(err, users) {
 				if (err)
 					console.log(err);
 
@@ -195,26 +201,25 @@ api.route('/users/:user_id')
 			if (err)
 				console.log(err);
 
+			userData = req.body.user;
 
 			if (user) {
-				newEvent = req.body.user.event_add;
-				user.email = req.body.user.email;
+				newEvent = userData.event_add;
 
 				if (newEvent) {
 					newEvent['_id'] = new ObjectId();
 					user.events.push(newEvent);
 				}
 
-				user.settings.circleColor = '#000000';
-
-				user.save(function(err) {
+				User.update({'_id': user._id}, {$set: userData}, function(err) {
 					if (err)
 						console.log(err);
 
 					//-- Broadcast newly saved event
 					//-- TODO: Broadcast to User's followers only
 					//-- TODO: Create and fire events specific to what was updated.
-					io.emit('event_add', newEvent);
+					if (newEvent)
+						io.emit('event_add', newEvent);
 
 					res.json({
 						success: true,

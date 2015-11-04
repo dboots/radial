@@ -34,15 +34,21 @@
 							<a class="btn" ng-click="search()"><i class="icon ion-search"></i></a>
 						</div>
 						
-						<div ng-repeat="result in searchResults">
-							{{result.email}}
+						<div id="result-items">
+							<div class="result-item" ng-repeat="result in searchResults">
+								<div class="result-name">{{result.fname}} {{result.lname}}</div>
+								<div class="result-action">
+									<i class="icon ion-ios-plus"></i>
+									<i class="icon ion-eye"></i>
+								</div>
+							</div>
 						</div>
 					</div>
 
 					<br class="clearfix" />
 
 					<a href="#/main/map" menu-close><i class="icon ion-map"></i> Home</a>
-					<a href="#/main/settings" menu-close><i class="icon ion-settings"></i> Settings</a>
+					<a href="#/main/settings" menu-close><i class="icon ion-settings"></i> Profile</a>
 					<a href="#/login" menu-close><i class="icon ion-android-exit"></i> Logout</a>
 
 				</div>

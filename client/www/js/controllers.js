@@ -25,7 +25,55 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 		}
 	})
 
-	.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $global, UserService, SocketService, MapService) {
+	.controller('SettingsCtrl', function($scope, UserService, $ionicPopup, $ionicHistory) {
+		$scope.$on('$ionicView.enter', function() {
+			$scope.user = UserService.User();
+		});
+
+		$scope.save = function() {
+			UserService.Update($scope.user).then(function(data) {
+				$ionicPopup.show({
+					title: 'Message',
+					template: 'Your changes have been saved.',
+					buttons: [
+						{ text: 'Continue' }
+					]
+				}) //-- end $ioonicPopup()
+			});
+		}
+
+		$scope.cancel = function() {
+			console.log($ionicHistory.currentView());
+			$ionicHistory.goBack();
+		}
+
+		/*
+		$scope.takePicture = function(my_param) {
+			var source = (my_isFromGallery) ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
+
+			var options = {
+				quality: 50,
+				destinationType: Camera.DestinationType.DATA_URL,
+				sourceType: source,
+				allowEdit: true,
+				encodingType: Camera.EncodingType.JPEG,
+				targetWidth: 100,
+				targetHeight: 100,
+				popoverOptions: CameraPopoverOptions,
+				saveToPhotoAlbum: false,
+				correctOrientation: false
+			};
+
+			$cordovaCamera.getPicture(options).then(function(imageData) {
+				$scope.data['imageData'] = imageData;
+			}, function(err) {
+				console.log(err);
+			});
+		}
+		*/
+	})
+
+	.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {
 		$scope.$on('$ionicView.enter', function() {
 			$scope.data = [];
 			$scope.data.email = 'fool';
@@ -42,7 +90,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				buttons: [
 					{ text: 'Thank you debug fairy!' }
 				]
-			}) //-- end $iconicPopup()
+			}) //-- end $ioonicPopup()
 		});
 
 		$scope.login = function() {
@@ -62,7 +110,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 							buttons: [
 								{ text: 'Try Again' }
 							]
-						}) //-- end $iconicPopup()
+						}) //-- end $ionicPopup()
 					}
 				} 
 			); //-- end .then()
@@ -74,10 +122,10 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 	}) //-- end LoginCtrl
 
 	.controller('RegisterCtrl', function($scope, $state, RegisterService, UserService, SocketService) {
-		$scope.data = [];
+		$scope.data = {};
 
 		$scope.register = function() {
-			RegisterService.registerUser($scope.data.email, $scope.data.password)
+			RegisterService.registerUser($scope.data)
 				.then(function(data) {
 					if (data.data.success) {
 						SocketService.connect(data)
@@ -97,22 +145,24 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 		}
 	}) //-- end RegisterCtrl
 
-	.controller('MapCtrl', function($scope, $ionicSideMenuDelegate, $global, $state, MapService, UserService, EventService) {
+	.controller('MapCtrl', function($scope, $ionicSideMenuDelegate, $ionicHistory, $global, $state, MapService, UserService, EventService) {
 		$scope.$on('$ionicView.enter', function(e){
+			//$ionicHistory.clearHistory();
+			console.log($ionicHistory.viewHistory());
 			$ionicSideMenuDelegate.canDragContent(false);
+
+			MapService.Map().then(function(data) {
+				//-- data.map.on('click', UserService.AddEvent);
+				data.map.on('click', function(e) {
+					//-- Store map coords within EventService
+					EventService.Latlng(e.latlng);
+					$state.go('main.eventAdd');
+				});
+			});
 		});
 
 		$scope.$on('$ionicView.leave', function(e){
 			$ionicSideMenuDelegate.canDragContent(true);
-		});
-
-		MapService.Map().then(function(data) {
-			//-- data.map.on('click', UserService.AddEvent);
-			data.map.on('click', function(e) {
-				//-- Store map coords within EventService
-				EventService.Latlng(e.latlng);
-				$state.go('main.eventAdd');
-			});
 		});
 
 		$global.socket().on('event_add', function(my_event) {
@@ -155,7 +205,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 					buttons: [
 						{ text: 'Try Again' }
 					]
-				}) //-- end $iconicPopup()
+				}) //-- end $ionicPopup()
 			} //-- end success check
 		}
 

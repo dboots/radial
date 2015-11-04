@@ -1,0 +1,10 @@
+<ion-view view-title="Event Detail" name="eventDetail-view">
+	<ion-content class="padding">
+		<div class="item item-input">
+			<input type="text" ng-model="event.title" />
+		</div>
+		<p>{{event.startDate}}</p>
+		<button class="button button-block button-calm" ng-click="create()">Update Event</button>
+		<button class="button button-block button-assertive" ng-click="delete()">Delete Event</button>
+	</ion-content>
+</ion-view>
