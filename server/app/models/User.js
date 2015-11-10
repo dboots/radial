@@ -20,8 +20,26 @@ var UserSchema = new Schema({
 		circleColor: {type: String},
 		strokeColor: {type: String}
 	},
-	followers: {type: [Schema.Types.ObjectId]}
+	followers: {type: [Schema.Types.ObjectId], ref: 'User'},
+	following: {
+		userId: {type: Schema.Types.ObjectId, ref: 'User'},
+		accepted: {type: Boolean},
+		events: [EventSchema]
+	}
 });
+
+UserSchema.methods.addFollowing = function(my_userId) {
+	console.log('checking ', my_userId);
+}
+
+UserSchema.methods.getFollowingEvents = function() {
+	return {
+		title: 'Foo',
+		description: 'Foo Description',
+		latitude: 0,
+		longitude: 0
+	};
+};
 
 //-- CurrentEvents method
 

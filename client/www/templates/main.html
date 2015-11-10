@@ -29,6 +29,7 @@
 				<div id="leftnav">
 					<!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
 					<div id="leftnav-search">
+						<p class="subtitle">Follow a friend</p>
 						<div class="item item-input">
 							<input type="text" placeholder="Search by email..." ng-model="data.q">
 							<a class="btn" ng-click="search()"><i class="icon ion-search"></i></a>
@@ -38,7 +39,7 @@
 							<div class="result-item" ng-repeat="result in searchResults">
 								<div class="result-name">{{result.fname}} {{result.lname}}</div>
 								<div class="result-action">
-									<i class="icon ion-ios-plus"></i>
+									<i class="icon ion-ios-plus" ng-click="follow(result._id)"></i>
 									<i class="icon ion-eye"></i>
 								</div>
 							</div>
@@ -48,6 +49,7 @@
 					<br class="clearfix" />
 
 					<a href="#/main/map" menu-close><i class="icon ion-map"></i> Home</a>
+					<a href="#/main/notifications" menu-close><i class="icon ion-android-notifications"></i> Notifications</a>
 					<a href="#/main/settings" menu-close><i class="icon ion-settings"></i> Profile</a>
 					<a href="#/login" menu-close><i class="icon ion-android-exit"></i> Logout</a>
 

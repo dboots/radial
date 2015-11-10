@@ -3,8 +3,7 @@ var app = express();
 
 //-- Socket.io
 var http = require('http').Server(app);
-var io = require('socket.io').listen(http);
-var ioJwt = require('socketio-jwt');
+var io = require('./sockets')(http);
 
 //-- Mongo / Database
 var MongoClient = require('mongodb').MongoClient;
@@ -60,7 +59,6 @@ var port = process.env.PORT || 4343;
 var mongoose = require('mongoose');
 mongoose.connect(config.database, function(err) {
 	if (err) throw err;
-
 	console.log('Mongo connected.');
 });
 
@@ -132,7 +130,7 @@ api.post('/authenticate', function(req, res, next) {
 					expiresInMinutes: 1440 //-- 24 hours
 				});
 
-				res.json({
+				res.status(200).json({
 					success: true,
 					message: 'Auth success',
 					token: token,
@@ -195,13 +193,57 @@ api.route('/users')
 	}
 );
 
-api.route('/users/:user_id')
+api.route('/following/:user_id')
 	.put(function(req, res) {
 		User.findById(req.params.user_id, function(err, user) {
 			if (err)
 				console.log(err);
 
+			var followingUserId = req.body.followingUserId;
+
+			//-- If followingUserId not in User's following collection
+			//-- add to following collection and save()
+			//-- dispatch event
+			//-- else return error json
+
+		});
+	}
+);
+
+api.route('/users/:user_id/event')
+	.put(function(req, res) {
+		User.findById(req.params.user_id, function(err, user) {
+			if (err)
+				console.log(err);
+
+			var eventObj = req.body.eventObj;
+
+			user.events.push(eventObj);
+			user.save();
+
+			io.dispatch('add_event', eventObj);
+
+			res.status(200).json({
+				success: true,
+				data: eventObj,
+				message: 'Event added'
+			});
+
+		});
+	}
+);
+
+api.route('/users/:user_id')
+	.put(function(req, res) {
+		console.log(req.params.user_id);
+		User.findOne({_id: new ObjectId(req.params.user_id)}).populate('following.userId').exec(function(err, user) {
+			if (err)
+				console.log(err);
+
+			event = req.body.event;
 			userData = req.body.user;
+
+			console.log(user);
 
 			if (user) {
 				newEvent = userData.event_add;
@@ -218,8 +260,9 @@ api.route('/users/:user_id')
 					//-- Broadcast newly saved event
 					//-- TODO: Broadcast to User's followers only
 					//-- TODO: Create and fire events specific to what was updated.
-					if (newEvent)
-						io.emit('event_add', newEvent);
+
+					if (event)
+						io.dispatch(event, newEvent, user);
 
 					res.json({
 						success: true,
@@ -246,67 +289,5 @@ app.use('/v1/api', api);
 http.listen(port);
 console.log('Server started on port: ' + port);
 
-//-- ***
-//-- End Start Server
-//-- ***
-//-- Begin Socket.IO
-//-- ****
-
-var clientsConnected = 0;
-
-io.use(ioJwt.authorize({
-	secret: app.get('secret'),
-	handshake: true
-}));
-
-io.on('connection', function(socket){
-	connect();
-
-	socket.on('error', function(err) {
-		console.log('Socket.IO error:');
-		console.log(err);
-	});
-
-	socket.on('disconnect', function(){
-		disconnect();
-	});
-});
-
-//-- ***
-//-- End Socket.IO
-//-- ***
-
-
-function connect() {
-	clientsConnected++;
-
-	console.log('user connected. ' + clientsConnected + ' total.');
-}
-
-function disconnect() {
-	clientsConnected--;
-
-	console.log('user disconnected. ' + clientsConnected + ' total.');
-}
-
-function event_add(latLng) {
-	/*
-	var addEvent = function(db, callback) {
-		db.collection('events').insertOne({
-			'latitude' : latLng.latitude,
-			'longitude' : latLng.longitude
-		}, function(err, result) {
-			assert.equal(err, null);
-			console.log('Event created at ' + latLng.latitude + ', ' + latLng.longitude);
-			callback(result);
-		});
-	}
-
-	MongoClient.connect(url, function(err, db) {
-		assert.equal(null, err);
-		addEvent(db, function() {
-			db.close();
-		});
-	});
-	*/
-}
+io.init(app);
+console.log('Socket.io init complete');

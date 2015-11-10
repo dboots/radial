@@ -57,7 +57,9 @@ angular.module('starter.services', [])
 		connect: function(my_data) {
 			var d = $q.defer();
 
-			socket = io.connect($global.config('server'), {
+			//-- io is referenced from .js file in index.html
+			console.log('connecting with:', my_data.data.token);
+			var socket = io.connect($global.config('server'), {
 				query: 'token=' + my_data.data.token,
 				forceNew: true
 			});
@@ -114,8 +116,8 @@ angular.module('starter.services', [])
 			var user = UserService.User();
 
 			L.mapbox.accessToken = _mapboxToken;
-			_map = L.mapbox.map(_mapElement, _mapId)
-				.setView([my_position.coords.latitude, my_position.coords.longitude], 14);
+			_map = L.mapbox.map(_mapElement, _mapId, { 'minZoom': 12, 'maxZoom': 15})
+				.setView([my_position.coords.latitude, my_position.coords.longitude], 12);
 
 			MapService.PlotEvents(user.events);
 
@@ -240,6 +242,17 @@ angular.module('starter.services', [])
 		},
 
 		AddEvent: function(my_event) {
+			if (my_event) {
+				console.log('adding event to user:', _user);
+				console.log(my_event);
+				return $http.put($global.config('api') + '/users/' + _user._id + '/event', {
+					eventObj: my_event,
+					token: window.localStorage['token'],
+				});
+			}
+		},
+
+		xAddEvent: function(my_event) {
 			console.log(my_event);
 			if (my_event) {
 				var newEvent = {
@@ -278,13 +291,27 @@ angular.module('starter.services', [])
 
 .service('EventService', function($state) {
 	var _latlng;
+	var _events = [];
 	
 	var EventService = {
+		Events: function(my_user) {
+			if (my_user)
+				_events = my_user['events'];
+
+			console.log(_events);
+
+			return _events;
+		},
+
 		Latlng: function(my_latlng) {
 			if (my_latlng)
 				_latlng = my_latlng;
 
 			return _latlng;
+		},
+
+		Owner: function(my_user) {
+
 		}
 	};
 

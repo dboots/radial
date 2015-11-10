@@ -4,6 +4,19 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 		$scope.searchResults = [];
 		searchTimeout = true;
 
+		$scope.follow = function(my_followUserId) {
+			//-- Insert object into logged in user's following collection. Defaults
+			//-- to accepted = false until user being requested to follow approves.
+			var user = UserService.User();
+
+			user['following'] = {
+				userId: my_followUserId,
+				accepted: false
+			};
+
+			UserService.Update(user, 'follow_request');
+		}
+
 		$scope.search = function() {
 			if ($scope.data.q && searchTimeout) {
 				//-- Send uid with search request to exclude requesting user.
@@ -159,22 +172,28 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 					$state.go('main.eventAdd');
 				});
 			});
+
+			$global.socket().on('add_event', function(my_event) {
+				console.log('add_event triggered');
+				console.log(my_event);
+				var latLng = L.latLng(my_event.latitude, my_event.longitude);
+				MapService.Circle(latLng, null, my_event);
+			});
 		});
 
 		$scope.$on('$ionicView.leave', function(e){
 			$ionicSideMenuDelegate.canDragContent(true);
 		});
-
-		$global.socket().on('event_add', function(my_event) {
-			console.log('event_add triggered');
-			var latLng = L.latLng(my_event.latitude, my_event.longitude);
-			MapService.Circle(latLng, null, my_event);
-		});
 	})
 
-	.controller('EventDetailCtrl', function($scope, $stateParams, UserService) {
+	.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService) {
 		var eventId = $stateParams.id;
+
 		$scope.event = UserService.GetEvent(eventId);
+
+		$scope.owner = function() {
+			return (EventService.Events)
+		}
 	})
 
 	.controller('EventCtrl', function($state, $stateParams, $scope, EventService, UserService) {
@@ -195,18 +214,9 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				longitude: latlng.lng
 			};
 
-			var success = UserService.AddEvent(newEvent);
-
-			if (success) {
+			UserService.AddEvent(newEvent).then(function(data) {
 				$state.go('main.map');
-			} else {
-				$ionicPopup.show({
-					title: data.data.message, 
-					buttons: [
-						{ text: 'Try Again' }
-					]
-				}) //-- end $ionicPopup()
-			} //-- end success check
+			});
 		}
 
 		$scope.cancel = function() {
