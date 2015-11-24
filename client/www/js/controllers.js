@@ -1,20 +1,24 @@
 var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
-	.controller('MainCtrl', function($scope, SearchService, UserService, $timeout) {
-		$scope.data = [];
-		$scope.searchResults = [];
-		searchTimeout = true;
+	.controller('MainCtrl', function($scope, SearchService, UserService, $timeout, $ionicPopup) {
+		$scope.$on('$ionicView.enter', function() {
+			$scope.data = [];
+			$scope.searchResults = [];
+			$scope.following = UserService.User().following;
+		});
+
+		var searchTimeout = true;
 
 		$scope.follow = function(my_followUserId) {
-			//-- Insert object into logged in user's following collection. Defaults
-			//-- to accepted = false until user being requested to follow approves.
-			var user = UserService.User();
-
-			user['following'] = {
-				userId: my_followUserId,
-				accepted: false
-			};
-
-			UserService.Update(user, 'follow_request');
+			UserService.Follow(my_followUserId).then(function(data) {
+				//-- TODO: Convert to PopupService:Popup(data.message);
+				$ionicPopup.show({
+					title: '!!',
+					template: data.data.message,
+					buttons: [
+						{ text: 'Ok' }
+					]
+				}) //-- end $ionicPopup()
+			});
 		}
 
 		$scope.search = function() {
@@ -103,7 +107,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				buttons: [
 					{ text: 'Thank you debug fairy!' }
 				]
-			}) //-- end $ioonicPopup()
+			}) //-- end $ionicPopup()
 		});
 
 		$scope.login = function() {
@@ -143,6 +147,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 					if (data.data.success) {
 						SocketService.connect(data)
 							.then(function(data) {
+								console.log(data);
 								//-- Create User object
 								UserService.login(data);
 								$state.go('main.map');
@@ -165,6 +170,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 			$ionicSideMenuDelegate.canDragContent(false);
 
 			MapService.Map().then(function(data) {
+				MapService.PlotEvents(UserService.User());
 				//-- data.map.on('click', UserService.AddEvent);
 				data.map.on('click', function(e) {
 					//-- Store map coords within EventService
@@ -177,7 +183,7 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				console.log('add_event triggered');
 				console.log(my_event);
 				var latLng = L.latLng(my_event.latitude, my_event.longitude);
-				MapService.Circle(latLng, null, my_event);
+				MapService.Circle(latLng, '#0000FF', my_event);
 			});
 		});
 

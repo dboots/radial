@@ -48,6 +48,11 @@
 
 					<br class="clearfix" />
 
+					<p class="subtitle">Following</p>
+					<div id="follower-items">
+						<div class="follower-item" ng-repeat="follower in following">{{follower.user.fname}} {{follower.user.lname}}</div>
+					</div>
+
 					<a href="#/main/map" menu-close><i class="icon ion-map"></i> Home</a>
 					<a href="#/main/notifications" menu-close><i class="icon ion-android-notifications"></i> Notifications</a>
 					<a href="#/main/settings" menu-close><i class="icon ion-settings"></i> Profile</a>

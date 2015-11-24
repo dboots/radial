@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var express = require('express');
 var app = express();
 
@@ -87,8 +88,6 @@ api.post('/register', function(req, res, next) {
 	user.fname = data.fname;
 	user.lname = data.lname;
 
-	console.log(data);
-
 	bcrypt.hash(data.password, 10, function(err, hash) {
 		user.password = hash;
 	
@@ -103,7 +102,8 @@ api.post('/register', function(req, res, next) {
 			res.json({
 				success: true,
 				message: 'Registration success',
-				token: token
+				token: token,
+				user: user
 			});
 		});
 	});
@@ -112,7 +112,13 @@ api.post('/register', function(req, res, next) {
 api.post('/authenticate', function(req, res, next) {
 	User.findOne({
 		email: req.body.email,
-	}, function(err, user) {
+	}).populate({
+		path: 'following.user',
+		match: { 'following.accepted': true },
+		select: 'fname lname events accepted'
+	}).populate({
+		path: 'following.userId.events'
+	}).exec(function(err, user) {
 		if (err) throw err;
 
 		if (!user) {
@@ -193,19 +199,52 @@ api.route('/users')
 	}
 );
 
-api.route('/following/:user_id')
-	.put(function(req, res) {
+api.route('/users/following/:user_id')
+	.post(function(req, res) {
 		User.findById(req.params.user_id, function(err, user) {
 			if (err)
 				console.log(err);
 
-			var followingUserId = req.body.followingUserId;
+			var isFollowing = false;
+			var followUserId = req.body.followUserId;
 
-			//-- If followingUserId not in User's following collection
-			//-- add to following collection and save()
-			//-- dispatch event
-			//-- else return error json
+			_.each(user.following, function(i) {
+				if (i.user ==  followUserId) 
+					isFollowing = true;
+			});
 
+			if (!isFollowing) {
+				user.following.push({
+					'user': followUserId
+				});
+
+				/*
+				user.save(function(err) {
+					User.populate(user, {
+						path: 'following.user'
+					}, function(err, u) {
+						res.status(200).json({
+							success: true,
+							data: u.following
+						})
+					});
+				});
+				*/
+
+				user.save(function(err) {
+					if (err) console.log(err);
+
+					res.status(200).json({
+						success: true,
+						message: 'Follow request sent! You will be notified when it is accepted'
+					});
+				})
+			} else {
+				res.status(200).json({
+					success: false,
+					message: 'Already requested follow!'
+				});
+			}
 		});
 	}
 );
@@ -235,34 +274,16 @@ api.route('/users/:user_id/event')
 
 api.route('/users/:user_id')
 	.put(function(req, res) {
-		console.log(req.params.user_id);
-		User.findOne({_id: new ObjectId(req.params.user_id)}).populate('following.userId').exec(function(err, user) {
+		User.findOne({_id: new ObjectId(req.params.user_id)}).populate('following.user').exec(function(err, user) {
 			if (err)
 				console.log(err);
 
-			event = req.body.event;
 			userData = req.body.user;
 
-			console.log(user);
-
 			if (user) {
-				newEvent = userData.event_add;
-
-				if (newEvent) {
-					newEvent['_id'] = new ObjectId();
-					user.events.push(newEvent);
-				}
-
 				User.update({'_id': user._id}, {$set: userData}, function(err) {
 					if (err)
 						console.log(err);
-
-					//-- Broadcast newly saved event
-					//-- TODO: Broadcast to User's followers only
-					//-- TODO: Create and fire events specific to what was updated.
-
-					if (event)
-						io.dispatch(event, newEvent, user);
 
 					res.json({
 						success: true,
@@ -276,7 +297,6 @@ api.route('/users/:user_id')
 				});
 			}
 		})
-		//res.json({user: user});
 	})
 
 //-- ***

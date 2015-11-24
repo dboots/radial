@@ -21,11 +21,10 @@ var UserSchema = new Schema({
 		strokeColor: {type: String}
 	},
 	followers: {type: [Schema.Types.ObjectId], ref: 'User'},
-	following: {
-		userId: {type: Schema.Types.ObjectId, ref: 'User'},
-		accepted: {type: Boolean},
-		events: [EventSchema]
-	}
+	following: [{
+		user: {type: Schema.Types.ObjectId, ref: 'User'},
+		accepted: {type: Boolean, default: false}
+	}],
 });
 
 UserSchema.methods.addFollowing = function(my_userId) {

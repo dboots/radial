@@ -88,7 +88,7 @@ angular.module('starter.services', [])
 	}
 })
 
-.factory('MapService', function($cordovaGeolocation, UserService, $state, $q) {
+.factory('MapService', function($cordovaGeolocation, $state, $q) {
 	var _map;
 	var _mapboxToken = 'pk.eyJ1IjoiZGJvb3RzIiwiYSI6ImNpZnNpMDBiaTE5eDByM2tyMHU0emluZTcifQ.Hl7P6OXhqxBkTqJ0J99eVA';
 	var _mapId = 'dboots.cifshzz181hx0s8m6kj4sjv7w';
@@ -113,13 +113,13 @@ angular.module('starter.services', [])
 		Success: function(my_position) {
 			var d = $q.defer();
 
-			var user = UserService.User();
+			//--var user = UserService.User();
 
 			L.mapbox.accessToken = _mapboxToken;
 			_map = L.mapbox.map(_mapElement, _mapId, { 'minZoom': 12, 'maxZoom': 15})
 				.setView([my_position.coords.latitude, my_position.coords.longitude], 12);
 
-			MapService.PlotEvents(user.events);
+			//--MapService.PlotEvents(user.events);
 
 			d.resolve({
 				map: _map
@@ -128,10 +128,28 @@ angular.module('starter.services', [])
 			return d.promise;
 		},
 
-		PlotEvents: function(my_events) {
-			for(var i = 0, len = my_events.length; i < len; i++) {
-				var latLng = L.latLng(my_events[i].latitude, my_events[i].longitude);
-				MapService.Circle(latLng, null, my_events[i]);
+		PlotEvents: function(my_user) {
+			var userEvents = my_user.events;
+			var userFollowing = my_user.following;
+
+			//-- Plot User's own events
+			for(var i = 0, len = userEvents.length; i < len; i++) {
+				var latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
+				MapService.Circle(latLng, '#00FF00', userEvents[i]);
+			}
+
+			//-- Plot User's Following events
+			for(var j = 0, userLen = userFollowing.length; j < userLen; j++) {
+				console.log('follower found', userFollowing);
+				var followingUserEvents = userFollowing[j].user.events;
+
+				for(var k = 0, eventsLen = followingUserEvents.length; k < eventsLen; k++) {
+					var evt = followingUserEvents[k];
+					var latLng = L.latLng(evt.latitude, evt.longitude);
+
+					console.log('plotting following user event:', evt);
+					MapService.Circle(latLng, '#FF0000', evt);
+				}
 			}
 		},
 
@@ -140,7 +158,7 @@ angular.module('starter.services', [])
 			if (my_latLng) {
 				var c = L.circle(my_latLng, 800, {
 					stroke: false,
-					color: '#DEDEDE',
+					color: my_color,
 					fillOpacity: 0.8
 				}).addTo(_map);
 
@@ -206,6 +224,7 @@ angular.module('starter.services', [])
 			if (data) {
 				window.localStorage['token'] = data.data.token;
 				_user = data.data.user;
+				console.log(_user);
 			}
 
 			return window.localStorage['token'];
@@ -226,6 +245,13 @@ angular.module('starter.services', [])
 				_user = my_user;
 
 			return _user;
+		},
+
+		Follow: function(my_followUserId) {
+			return $http.post($global.config('api') + '/users/following/' + _user._id, {
+				followUserId: my_followUserId,
+				token: window.localStorage['token']
+			});
 		},
 
 		//-- TODO: Pull token from LocalStorage service
