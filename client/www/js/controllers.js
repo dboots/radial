@@ -169,12 +169,15 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 				console.log(resp);
 
 				angular.forEach(user.followers, function(i) {
+					console.log(i);
 					console.log('checking ' + i.user._id + ' :: ' + resp.follower)
 					if (i.user._id == resp.follower.user) {
 						i.accepted = resp.accepted;
 						i.data = resp.date;
 					}
-				})
+				});
+
+				$scope.user = user;
 			});
 		};
 	})

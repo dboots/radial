@@ -131,7 +131,13 @@ api.post('/authenticate', function(req, res, next) {
 		if (!user) {
 			res.json({success: false, message: 'Auth failed. User not found.'});
 		} else if (user) {
-			io.socketChannel = 'user-' + user._id;
+			io.channels = [];
+			io.channels.push('user-' + user._id);
+
+			//-- Join user's following channels
+			_.each(user.following, function(i) {
+				io.channels.push('user-' + i.user._id);
+			});
 
 			//-- TODO: Move to Model method
 			bcrypt.compare(req.body.password, user.password, function(err, match) {
@@ -265,6 +271,7 @@ api.route('/users/follow/:user_id')
 						var obj = {
 							follower: {
 								user: {
+									_id: user._id,
 									fname: user.fname,
 									lname: user.lname
 								},
@@ -336,10 +343,11 @@ api.route('/users/follow/:user_id')
 				if (err) console.log(err);
 
 				if (accepted) {
+					console.log(followUserId);
 					//-- Lookup user that requested to follow
 					User.findById(followUserId, function(err, follower) {
 						//-- Make sure follower isn't added more than once.
-						console.log(followUserId);
+						console.log(follower);
 						_.each(follower.following, function(i) {
 							if (i.user.equals(userId))
 								isFollower = true;
@@ -429,7 +437,7 @@ api.route('/users/:user_id/event')
 			user.events.push(eventObj);
 			user.save();
 
-			io.dispatch('add_event', eventObj);
+			io.dispatch('add_event', eventObj, user._id);
 
 			res.status(200).json({
 				success: true,

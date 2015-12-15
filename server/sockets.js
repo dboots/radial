@@ -2,6 +2,7 @@
 
 var io = require('socket.io');
 var ioJwt = require('socketio-jwt');
+var _ = require('underscore');
 
 module.exports = function(my_http) {
 	var obj = {};
@@ -11,7 +12,7 @@ module.exports = function(my_http) {
 
 	_ioServer = io.listen(my_http);
 
-	obj.socketChannel = null;
+	obj.channels = [];
 
 	//--
 	//-- @init(app) - Setup _ioServer to use jwt and define connect/disconnect events.
@@ -29,7 +30,7 @@ module.exports = function(my_http) {
 	}
 
 	obj.dispatch = function(my_event, my_data, my_channel) {
-		console.log('[dispatch] dispatching event:', my_event);
+		console.log('[dispatch] dispatching to channel: ' + my_channel);
 		switch (my_event) {
 			case 'follow_approval':
 				console.log('[dispatch] sending follow approval to: ' + my_channel);
@@ -41,9 +42,14 @@ module.exports = function(my_http) {
 				break;
 			case 'add_event':
 				console.log('[dispatch] add_event', my_data);
-				_ioServer.emit(my_event, my_data, my_channel);
+				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 		}
+	}
+
+	obj.join = function(my_channel) {
+		console.log('joining channel: ' + my_channel);
+		_socket.join(my_channel);
 	}
 
 	//-- **
@@ -70,10 +76,10 @@ module.exports = function(my_http) {
 			disconnect();
 		});
 
-		if (obj.socketChannel) {
-			my_socket.join(obj.socketChannel);
-			console.log('joining: ' + obj.socketChannel);
-		}
+		_.each(obj.channels, function(i) {
+			my_socket.join(i);
+			console.log('joining: ' + i);
+		});
 
 		console.log('socket init complete');
 
