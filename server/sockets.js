@@ -27,21 +27,23 @@ module.exports = function(my_http) {
 			connect();
 			_socket = initSocket(socket);
 		});
+
+		console.log('[socket.js:init] init complete');
 	}
 
 	obj.dispatch = function(my_event, my_data, my_channel) {
-		console.log('[dispatch] dispatching to channel: ' + my_channel);
+		console.log('[socket.js:dispatch] dispatching to channel: ' + my_channel);
 		switch (my_event) {
 			case 'follow_approval':
-				console.log('[dispatch] sending follow approval to: ' + my_channel);
+				console.log('[socket.js:dispatch] sending follow approval to: ' + my_channel);
 				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 			case 'follow_request':
-				console.log('[dispatch] sending follow request to ' + my_channel);
+				console.log('[socket.js:dispatch] sending follow request to ' + my_channel);
 				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 			case 'add_event':
-				console.log('[dispatch] add_event', my_data);
+				console.log('[socket.js:dispatch] add_event', my_data);
 				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 		}
