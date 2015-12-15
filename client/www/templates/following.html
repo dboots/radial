@@ -1,0 +1,7 @@
+<ion-view view-title="Followers" name="followers-view">
+	<ion-content class="padding">
+		<div ng-repeat="follower in user.following">
+			{{follower.user.fname}} {{follower.user.lname}}
+		</div>
+	</ion-content>
+</ion-view>
