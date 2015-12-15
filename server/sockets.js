@@ -7,8 +7,11 @@ module.exports = function(my_http) {
 	var obj = {};
 	var _ioServer;
 	var _clientsConnected = 0;
+	var _socket;
 
 	_ioServer = io.listen(my_http);
+
+	obj.socketChannel = null;
 
 	//--
 	//-- @init(app) - Setup _ioServer to use jwt and define connect/disconnect events.
@@ -21,28 +24,24 @@ module.exports = function(my_http) {
 
 		_ioServer.on('connection', function(socket){
 			connect();
-
-			socket.on('error', function(err) {
-				console.log('Socket.IO error:');
-				console.log(err);
-			});
-
-			socket.on('disconnect', function(){
-				disconnect();
-			});
+			_socket = initSocket(socket);
 		});
 	}
 
-	obj.dispatch = function(my_event, my_data) {
-		console.log('dispatching event:', my_event);
+	obj.dispatch = function(my_event, my_data, my_channel) {
+		console.log('[dispatch] dispatching event:', my_event);
 		switch (my_event) {
+			case 'follow_approval':
+				console.log('[dispatch] sending follow approval to: ' + my_channel);
+				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
+				break;
 			case 'follow_request':
-				console.log(my_data);
+				console.log('[dispatch] sending follow request to ' + my_channel);
+				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 			case 'add_event':
-				console.log('add_event');
-				console.log(my_data);
-				_ioServer.emit(my_event, my_data);
+				console.log('[dispatch] add_event', my_data);
+				_ioServer.emit(my_event, my_data, my_channel);
 				break;
 		}
 	}
@@ -53,12 +52,32 @@ module.exports = function(my_http) {
 
 	function connect() {
 		_clientsConnected++;
-		console.log('Clients Connected:', _clientsConnected);
+		console.log('[connect] Clients Connected:', _clientsConnected);
 	}
 
 	function disconnect() {
 		_clientsConnected--;
-		console.log('Clients Connected:', _clientsConnected);;
+		console.log('[disconnect] Clients Connected:', _clientsConnected);;
+	}
+
+	function initSocket(my_socket) {
+		my_socket.on('error', function(err) {
+			console.log('[initSocket] Socket.IO error:');
+			console.log(err);
+		});
+
+		my_socket.on('disconnect', function(){
+			disconnect();
+		});
+
+		if (obj.socketChannel) {
+			my_socket.join(obj.socketChannel);
+			console.log('joining: ' + obj.socketChannel);
+		}
+
+		console.log('socket init complete');
+
+		return my_socket;
 	}
 
 	return obj;

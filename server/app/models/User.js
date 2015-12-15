@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
+var _ = require('underscore');
 var Schema = mongoose.Schema;
 
+//-- TODO: Move to separate file
 var EventSchema = new Schema({
 		title: String,
 		description: String,
@@ -20,26 +22,25 @@ var UserSchema = new Schema({
 		circleColor: {type: String},
 		strokeColor: {type: String}
 	},
-	followers: {type: [Schema.Types.ObjectId], ref: 'User'},
+	followers: [{
+		user: {type: Schema.Types.ObjectId, ref: 'User'},
+		accepted: {type: Boolean, default: false},
+		date: {type: Date, required: false}
+	}],
 	following: [{
 		user: {type: Schema.Types.ObjectId, ref: 'User'},
-		accepted: {type: Boolean, default: false}
+		date: {type: Date, required: false}
 	}],
+	notifications: [{
+		title: {type: String, required: true},
+		date: { type: Date, required: true},
+		read: { type: Boolean, default: false }
+	}]
 });
 
-UserSchema.methods.addFollowing = function(my_userId) {
-	console.log('checking ', my_userId);
-}
-
-UserSchema.methods.getFollowingEvents = function() {
-	return {
-		title: 'Foo',
-		description: 'Foo Description',
-		latitude: 0,
-		longitude: 0
-	};
+UserSchema.methods.isFollowing = function(userId) {
+	console.log('UserSchema.methods.isFollowing');
+	console.log(userId);
 };
-
-//-- CurrentEvents method
 
 module.exports = mongoose.model('User', UserSchema);

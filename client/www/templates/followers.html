@@ -1,14 +1,11 @@
 <ion-view view-title="Followers" name="followers-view">
 	<ion-content class="padding">
-		<div class="list list-inset">
-			<label class="item item-input">
-				<input type="text" placeholder="Circle Color" ng-model="data.color">
-			</label>
-			<label class="item item-input">
-				<input type="text" placeholder="Stroke Color" ng-model="data.stroke">
-			</label>
+		<div ng-repeat="follower in user.followers">
+			{{follower.user.fname}} {{follower.user.lname}}
+			<span ng-show="follower.accepted == false">
+			<i ng-click="approve(follower.user._id, true)" class="icon ion-checkmark-circled"></i>
+			<i ng-click="approve(follower.user._id, false)" class="icon ion-close-circled"></i>
+			</span>
 		</div>
-		<button class="button button-block button-calm" ng-click="create()">Save Settings</button>
-		<button class="button button-block button-calm" ng-click="cancel()">Cancel</button>
 	</ion-content>
 </ion-view>

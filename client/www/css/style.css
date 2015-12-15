@@ -7,6 +7,10 @@ p.subtitle {
 	margin: 0;
 }
 
+a .badge {
+	float: right;
+}
+
 .clearfix {
 	clear: both;
 }

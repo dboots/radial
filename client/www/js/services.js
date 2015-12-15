@@ -141,7 +141,7 @@ angular.module('starter.services', [])
 			//-- Plot User's Following events
 			for(var j = 0, userLen = userFollowing.length; j < userLen; j++) {
 				console.log('follower found', userFollowing);
-				var followingUserEvents = userFollowing[j].user.events;
+				var followingUserEvents = (userFollowing[j].user != null) ? userFollowing[j].user.events : [];
 
 				for(var k = 0, eventsLen = followingUserEvents.length; k < eventsLen; k++) {
 					var evt = followingUserEvents[k];
@@ -248,8 +248,17 @@ angular.module('starter.services', [])
 		},
 
 		Follow: function(my_followUserId) {
-			return $http.post($global.config('api') + '/users/following/' + _user._id, {
+			return $http.post($global.config('api') + '/users/follow/' + _user._id, {
 				followUserId: my_followUserId,
+				token: window.localStorage['token']
+			});
+		},
+
+		FollowApproval: function(my_followUserId, my_approval) {
+			console.log('[FollowApproval] my_followUserId: ' + my_followUserId);
+			return $http.put($global.config('api') + '/users/follow/' + _user._id, {
+				followUserId: my_followUserId,
+				accepted: my_approval,
 				token: window.localStorage['token']
 			});
 		},

@@ -1,30 +1,80 @@
 var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
-	.controller('MainCtrl', function($scope, SearchService, UserService, $timeout, $ionicPopup) {
-		$scope.$on('$ionicView.enter', function() {
-			$scope.data = [];
+	.controller('MainCtrl', function($scope, $filter, SearchService, UserService, $timeout, $ionicPopup, $global) {
+		$scope.$on('$ionicView.enter', function(viewEvent) {
+			var user = UserService.User();
+
+			//-- Search box value from left menu
+			$scope.query = [];
+
+			//-- Data retrieved from $scope.search()
 			$scope.searchResults = [];
-			$scope.following = UserService.User().following;
+
+			//-- Collection of unread notifications from logged in User object
+			$scope.notificationCount = 0;
+
+			angular.forEach(user.notifications, function(i, v) {
+				if (!i.read)
+					$scope.notificationCount++;
+			})
+
+			$scope.user = user;
+
+			console.log('MainCtrl enter');
+		});
+
+		$global.socket().on('follow_approval', function(my_data) {
+			console.log('follow_approval');
+
+			$ionicPopup.show({
+				title: '!!',
+				template: 'Follow request approved!',
+				buttons: [
+					{ text: 'Ok' }
+				]
+			}); //-- end $ionicPopup()
+
+			console.log(my_data);
+
+			$scope.user.notificationCount++;
+			$scope.user.notifications.push(my_data.notification);
+			$scope.user.following.push(my_data.following);
+		});
+
+		$global.socket().on('follow_request', function(my_data) {
+			$ionicPopup.show({
+				title: '!!',
+				template: 'Follow request!',
+				buttons: [
+					{ text: 'Ok' }
+				]
+			}); //-- end $ionicPopup()
+
+			$scope.notificationCount++;
+			$scope.user.notifications.push(my_data.notification);
+			$scope.user.followers.push(my_data.follower);
 		});
 
 		var searchTimeout = true;
 
 		$scope.follow = function(my_followUserId) {
 			UserService.Follow(my_followUserId).then(function(data) {
-				//-- TODO: Convert to PopupService:Popup(data.message);
 				$ionicPopup.show({
 					title: '!!',
 					template: data.data.message,
 					buttons: [
 						{ text: 'Ok' }
 					]
-				}) //-- end $ionicPopup()
+				}); //-- end $ionicPopup()
 			});
-		}
+		} //-- end $scope.follow
 
 		$scope.search = function() {
-			if ($scope.data.q && searchTimeout) {
+			if ($scope.query.val && searchTimeout) {
 				//-- Send uid with search request to exclude requesting user.
 				var uid = UserService.User()._id;
+				var query = $scope.query.val;
+
+				console.log('searching for: ' + query);
 
 				//-- This will be reset to true and allow another search request after the
 				//-- above $timeout() is finished.
@@ -35,11 +85,31 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 					console.log('searchTimeout: ' + searchTimeout);
 				}, 1000);
 
-				SearchService.Search($scope.data.q, uid).then(function(data) {
+				SearchService.Search(query, uid).then(function(data) {
 					$scope.searchResults = data.data.result;
 				});
 			}
-		}
+		};
+
+
+	})
+
+	.controller('NotificationsCtrl', function($scope, UserService) {
+		$scope.$on('$ionicView.enter', function() {
+			var user = UserService.User();
+			$scope.user = user;
+
+			//-- Clear notifications on load
+			angular.forEach(user.notifications, function(i, v) {
+				console.log(i);
+				if (!i.read) {
+					i.read = true;
+					console.log('setting ' + i.title + ' read to true');
+				}
+			});
+
+			UserService.Update(user);
+		});
 	})
 
 	.controller('SettingsCtrl', function($scope, UserService, $ionicPopup, $ionicHistory) {
@@ -88,6 +158,39 @@ var app = angular.module('starter.controllers', ['ngCordova', 'ionic'])
 			});
 		}
 		*/
+	})
+
+	.controller('FollowersCtrl', function($scope, UserService) {
+		var user = UserService.User();
+
+		$scope.approve = function(my_followUserId, my_approval) {
+			UserService.FollowApproval(my_followUserId, my_approval).then(function(my_data) {
+				resp = my_data.data;
+				console.log(resp);
+
+				angular.forEach(user.followers, function(i) {
+					console.log('checking ' + i.user._id + ' :: ' + resp.follower)
+					if (i.user._id == resp.follower.user) {
+						i.accepted = resp.accepted;
+						i.data = resp.date;
+					}
+				})
+			});
+		};
+	})
+
+	.controller('FollowingCtrl', function($scope, UserService) {
+		var user = UserService.User();
+
+		$scope.approve = function(my_approval, my_followerUserId) {
+			angular.forEach(user.following, function(i, v) {
+				if (i._id == my_followUserId) {
+					console.log('approving follow request for: ' + my_followerUserId);
+					i.accepted = true;
+					UserService.Follower(my_followerUserId, user._id);
+				}
+			});
+		};
 	})
 
 	.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {

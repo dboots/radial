@@ -87,6 +87,38 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 					}
 				}			
 			}
+		)
+
+		.state('main.followers', {
+			url: '/followers',
+				views: {
+					'mainContent': {
+						templateUrl: 'templates/followers.html',
+						controller: 'FollowersCtrl'
+					}
+				}			
+			}
+		)
+
+		.state('main.following', {
+			url: '/following',
+				views: {
+					'mainContent': {
+						templateUrl: 'templates/following.html',
+						controller: 'FollowingCtrl'
+					}
+				}			
+			}
+		)
+		.state('main.notifications', {
+			url: '/notifications',
+				views: {
+					'mainContent': {
+						templateUrl: 'templates/notifications.html',
+						controller: 'NotificationsCtrl'
+					}
+				}			
+			}
 		);
 
 	// if none of the above states are matched, use this as the fallback
