@@ -1,4 +1,9 @@
+/*jslint node: true */
+'use strict';
+
 var User = require('../../models/User');
+var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 
 module.exports = function(router) {
 	//-- ***
@@ -19,8 +24,13 @@ module.exports = function(router) {
 					res.json({
 						success: true,
 						result: users
-					})
-				})
+					});
+				});
+			} else {
+				res.json({
+					success: false,
+					result: {}
+				});
 			}
 		}
 	);

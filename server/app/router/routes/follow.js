@@ -2,7 +2,7 @@ var User = require('../../models/User');
 var _ = require('underscore');
 
 
-module.exports = function(router) {	
+module.exports = function(router, io) {	
 	router.route('/users/follow/:user_id')
 		/*
 		* Step 1 in Follower/Following process:
@@ -116,7 +116,7 @@ module.exports = function(router) {
 				if (err) console.log(err);
 
 				//-- Update user's follower collection with decision and date
-				_.each(user.following, function(i) {
+				_.each(user.followers, function(i) {
 					if (i.user.equals(followUserId)) {
 						i.accepted = accepted;
 						i.date = new Date();

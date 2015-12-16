@@ -38,18 +38,18 @@ angular.module('starter.services', [])
 
 			return _socket;
 		}
-	}
+	};
 })
 
 .factory('LoginService', ['$global', '$http', function($global, $http) {
 	return {
 		loginUser: function(email, password) {
 			return $http.post($global.config('api') + '/authenticate', {
-				email: email, 
+				email: email,
 				password: password
 			});
 		}
-	}
+	};
 }])
 
 .factory('SocketService', function($global, $q) {
@@ -85,7 +85,7 @@ angular.module('starter.services', [])
 
 			return d.promise;
 		}
-	}
+	};
 })
 
 .factory('MapService', function($cordovaGeolocation, $state, $q) {
@@ -123,7 +123,7 @@ angular.module('starter.services', [])
 
 			d.resolve({
 				map: _map
-			})
+			});
 
 			return d.promise;
 		},
@@ -134,18 +134,18 @@ angular.module('starter.services', [])
 
 			//-- Plot User's own events
 			for(var i = 0, len = userEvents.length; i < len; i++) {
-				var latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
+				latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
 				MapService.Circle(latLng, '#00FF00', userEvents[i]);
 			}
 
 			//-- Plot User's Following events
 			for(var j = 0, userLen = userFollowing.length; j < userLen; j++) {
 				console.log('follower found', userFollowing);
-				var followingUserEvents = (userFollowing[j].user != null) ? userFollowing[j].user.events : [];
+				var followingUserEvents = (userFollowing[j].user !== null) ? userFollowing[j].user.events : [];
 
 				for(var k = 0, eventsLen = followingUserEvents.length; k < eventsLen; k++) {
 					var evt = followingUserEvents[k];
-					var latLng = L.latLng(evt.latitude, evt.longitude);
+					latLng = L.latLng(evt.latitude, evt.longitude);
 
 					console.log('plotting following user event:', evt);
 					MapService.Circle(latLng, '#FF0000', evt);
@@ -179,7 +179,7 @@ angular.module('starter.services', [])
 
 		Map: function() {
 			var d = $q.defer();
-			if (_map == undefined) {
+			if (_map === undefined) {
 				MapService.Init().then(function(data) {
 					_map = data.map;
 
@@ -203,7 +203,7 @@ angular.module('starter.services', [])
 			}
 
 		}
-	}
+	};
 
 	return MapService;
 })
@@ -213,7 +213,7 @@ angular.module('starter.services', [])
 		registerUser: function(my_data) {
 			return $http.post($global.config('api') + '/register', my_data);
 		}
-	}
+	};
 }])
 
 .factory('UserService', function($global, $http) {
@@ -319,7 +319,7 @@ angular.module('starter.services', [])
 
 			return evt;
 		}
-	}
+	};
 
 	return UserService;
 })

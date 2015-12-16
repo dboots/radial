@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var User = require('../../models/User');
 var _ = require('underscore');
 var bcrypt = require('bcrypt');
@@ -51,8 +54,8 @@ module.exports = function(router, io, config) {
 						token: token,
 						user: user
 					});
-				}) //-- end password check
+				}); //-- end password check
 			} //-- end user check
 		}); //-- end User.findOne()
 	}); //-- end /authenticate POST route
-}
+};

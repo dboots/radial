@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var config = require('./config');
@@ -26,4 +29,4 @@ module.exports = function(app) {
 	app.use(bodyParser.json());
 
 	app.set('secret', config.secret);
-}
+};

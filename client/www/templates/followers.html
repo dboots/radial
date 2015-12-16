@@ -6,6 +6,8 @@
 			<i ng-click="approve(follower.user._id, true)" class="icon ion-checkmark-circled"></i>
 			<i ng-click="approve(follower.user._id, false)" class="icon ion-close-circled"></i>
 			</span>
+
+			<span ng-show="follower.accepted == false && follower.response != ''">declined</span>
 		</div>
 	</ion-content>
 </ion-view>

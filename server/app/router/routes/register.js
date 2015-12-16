@@ -1,8 +1,11 @@
+/*jslint node: true */
+'use strict';
+
 var User = require('../../models/User');
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
-module.exports = function(router) {
+module.exports = function(router, io) {
 	router.get('/register', function(req, res, next) {
 		res.json({
 			success: true
@@ -25,7 +28,9 @@ module.exports = function(router) {
 			user.save(function(err, user) {
 				if (err) return(next(err));
 
-				io.socketChannel = 'user-' + user._id;
+				//-- Join channel for user notifications
+				io.channels.push('user-' + user._id);
+
 
 				//-- TODO: Move to module method
 				var token = jwt.sign(user, app.get('secret'), {
@@ -41,4 +46,4 @@ module.exports = function(router) {
 			});
 		});
 	});
-}
+};

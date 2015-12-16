@@ -1,24 +1,17 @@
+/*jslint node: true */
+'use strict';
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 
-//-- Mongo / Database
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
-
-//-- Socket.io wrapper
 var io = require('./sockets')(http);
-
-//-- Configuration
 var config = require('./config');
 
-//-- Server setup (CORS, etc)
 require('./setup')(app);
+var api = require('./app/router/router.js')(app, io, config);
 
-//-- Setup API routes
-require('./app/router/router.js')(app, io, config);
 
-//-- Mongo variables
 var mongoose = require('mongoose');
 mongoose.connect(config.database, function(err) {
 	if (err) throw err;
@@ -31,4 +24,3 @@ io.init(app);
 //-- Start Server
 http.listen(config.port);
 console.log('[main] Server started on port: ' + config.port);
-

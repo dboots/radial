@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var User = require('../../models/User');
 
 module.exports = function(router, io) {
@@ -23,4 +26,4 @@ module.exports = function(router, io) {
 			});
 		}
 	);
-}
+};

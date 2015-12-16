@@ -1,4 +1,5 @@
-'use strict'
+/*jslint node: true */
+'use strict';
 
 var io = require('socket.io');
 var ioJwt = require('socketio-jwt');
@@ -29,7 +30,7 @@ module.exports = function(my_http) {
 		});
 
 		console.log('[socket.js:init] init complete');
-	}
+	};
 
 	obj.dispatch = function(my_event, my_data, my_channel) {
 		console.log('[socket.js:dispatch] dispatching to channel: ' + my_channel);
@@ -47,12 +48,12 @@ module.exports = function(my_http) {
 				_ioServer.to('user-' + my_channel).emit(my_event, my_data);
 				break;
 		}
-	}
+	};
 
 	obj.join = function(my_channel) {
 		console.log('joining channel: ' + my_channel);
 		_socket.join(my_channel);
-	}
+	};
 
 	//-- **
 	//-- Local functions
@@ -65,7 +66,7 @@ module.exports = function(my_http) {
 
 	function disconnect() {
 		_clientsConnected--;
-		console.log('[disconnect] Clients Connected:', _clientsConnected);;
+		console.log('[disconnect] Clients Connected:', _clientsConnected);
 	}
 
 	function initSocket(my_socket) {
@@ -89,7 +90,7 @@ module.exports = function(my_http) {
 	}
 
 	return obj;
-}
+};
 
 
 /*
