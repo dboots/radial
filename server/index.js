@@ -19,7 +19,7 @@ mongoose.connect(config.database, function(err) {
 });
 
 //-- Init Socket.io
-io.init(app);
+io.init();
 
 //-- Start Server
 http.listen(config.port);

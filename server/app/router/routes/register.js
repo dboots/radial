@@ -4,6 +4,7 @@
 var User = require('../../models/User');
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
+var config = require('../../../config');
 
 module.exports = function(router, io) {
 	router.get('/register', function(req, res, next) {
@@ -33,7 +34,7 @@ module.exports = function(router, io) {
 
 
 				//-- TODO: Move to module method
-				var token = jwt.sign(user, app.get('secret'), {
+				var token = jwt.sign(user, config.secret, {
 					expiresInMinutes: 1440 //-- 24 hours
 				});
 

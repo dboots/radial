@@ -4,6 +4,7 @@
 var io = require('socket.io');
 var ioJwt = require('socketio-jwt');
 var _ = require('underscore');
+var config = require('./config');
 
 module.exports = function(my_http) {
 	var obj = {};
@@ -18,9 +19,9 @@ module.exports = function(my_http) {
 	//--
 	//-- @init(app) - Setup _ioServer to use jwt and define connect/disconnect events.
 	//--
-	obj.init = function(my_app) {
+	obj.init = function() {
 		_ioServer.use(ioJwt.authorize({
-			secret: my_app.get('secret'),
+			secret: config.secret,
 			handshake: true
 		}));
 
