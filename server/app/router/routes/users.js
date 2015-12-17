@@ -41,7 +41,7 @@ module.exports = function(router) {
 				if (err)
 					console.log(err);
 
-				userData = req.body.user;
+				var userData = req.body.user;
 
 				if (user) {
 					User.update({'_id': user._id}, {$set: userData}, function(err) {
@@ -59,7 +59,7 @@ module.exports = function(router) {
 						message: 'User not found'
 					});
 				}
-			})
+			});
 		}
 	);
-}
+};

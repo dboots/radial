@@ -18,7 +18,7 @@
 			});
 		});
 
-		$scope.$on('$ionicView.leave', function(e){
+		$scope.$on('$ionicView.leav e', function(e){
 			$ionicSideMenuDelegate.canDragContent(true);
 		});
 	});
