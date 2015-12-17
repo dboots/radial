@@ -7,7 +7,7 @@
 	// the 2nd parameter is an array of 'requires'
 	// 'starter.services' is found in services.js
 	// 'starter.controllers' is found in controllers.js
-	angular.module('starter', ['ionic', 'app.controllers', 'starter.services'])
+	angular.module('starter', ['ionic', 'app.controllers', 'app.services'])
 
 	.run(function($ionicPlatform, $global, UserService, $state) {
 		$ionicPlatform.ready(function() {
@@ -32,7 +32,7 @@
 		$stateProvider
 			.state('login', {
 				url: '/login',
-				templateUrl: 'templates/login.html',
+				templateUrl: 'js/Login/Login.html',
 				controller: 'LoginCtrl'
 			})
 
@@ -53,7 +53,7 @@
 				url: '/map',
 				views: {
 					'mainContent': {
-						templateUrl: 'templates/map.html',
+						templateUrl: 'js/Map/Map.html',
 						controller: 'MapCtrl'
 					}
 				}
