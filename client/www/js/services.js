@@ -106,7 +106,7 @@ angular.module('starter.services', [])
 		Init: function() {
 			var d = $q.defer();
 
-			var options = {timeout: 10000, enableHighAccuracy: true};
+			var options = {timeout: 100000, enableHighAccuracy: true};
 			$cordovaGeolocation.getCurrentPosition(options)
 				.then(this.Success, this.Error)
 				.then(function(data) {
@@ -183,6 +183,8 @@ angular.module('starter.services', [])
 		Error: function(err) {
 			console.log(err);
 			console.log('code: '    + err.code    + '\n' + 'message: ' + err.message + '\n');
+			console.log('trying again...');
+			this.Init();
 		},
 
 		Map: function() {
