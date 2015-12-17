@@ -4,8 +4,6 @@
 	angular.module('app.controllers')
 		.controller('MapCtrl', function($scope, $ionicSideMenuDelegate, $ionicHistory, $global, $state, MapService, UserService, EventService) {
 			$scope.$on('$ionicView.enter', function(e){
-				//$ionicHistory.clearHistory();
-				console.log($ionicHistory.viewHistory());
 				$ionicSideMenuDelegate.canDragContent(false);
 
 				MapService.Map().then(function(data) {

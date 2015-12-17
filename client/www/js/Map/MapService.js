@@ -55,14 +55,12 @@
 
 					//-- Plot User's Following events
 					for(var j = 0, userLen = userFollowing.length; j < userLen; j++) {
-						console.log('follower found', userFollowing);
 						var followingUserEvents = (userFollowing[j].user !== null) ? userFollowing[j].user.events : [];
 
 						for(var k = 0, eventsLen = followingUserEvents.length; k < eventsLen; k++) {
 							var evt = followingUserEvents[k];
 							latLng = L.latLng(evt.latitude, evt.longitude);
 
-							console.log('plotting following user event:', evt);
 							MapService.Circle(latLng, '#FF0000', evt);
 						}
 					}
