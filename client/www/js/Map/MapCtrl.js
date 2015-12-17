@@ -8,7 +8,6 @@
 			$ionicSideMenuDelegate.canDragContent(false);
 
 			MapService.Map().then(function(data) {
-				console.log(data);
 				MapService.PlotEvents(UserService.User());
 				//-- data.map.on('click', UserService.AddEvent);
 				data.map.on('click', function(e) {

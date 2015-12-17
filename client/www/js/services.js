@@ -96,7 +96,7 @@ angular.module('starter.services', [])
 	};
 })
 
-.factory('MapService', function($cordovaGeolocation, $state, $q) {
+.factory('MapService', function($cordovaGeolocation, $state, $q, $ionicPopup) {
 	var _map;
 	var _mapboxToken = 'pk.eyJ1IjoiZGJvb3RzIiwiYSI6ImNpZnNpMDBiaTE5eDByM2tyMHU0emluZTcifQ.Hl7P6OXhqxBkTqJ0J99eVA';
 	var _mapId = 'dboots.cifshzz181hx0s8m6kj4sjv7w';
@@ -181,15 +181,21 @@ angular.module('starter.services', [])
 		},
 
 		Error: function(err) {
-			console.log(err);
-			console.log('code: '    + err.code    + '\n' + 'message: ' + err.message + '\n');
-			console.log('trying again...');
-			this.Init();
+			$ionicPopup.show({
+				title: 'Error',
+				template: 'code: '    + err.code    + '<br />' + 'message: ' + err.message + '<br />trying again...',
+				buttons: [
+					{ text: 'Ok' }
+				]
+			}); //-- end $ionicPopup()
+
+			MapService.Init();
 		},
 
 		Map: function() {
 			var d = $q.defer();
-			if (_map === undefined) {
+
+			if (!_map) {
 				MapService.Init().then(function(data) {
 					_map = data.map;
 
