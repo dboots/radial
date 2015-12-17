@@ -30,6 +30,7 @@ module.exports = function(router, io) {
 				if (err) return(next(err));
 
 				//-- Join channel for user notifications
+				io.channels = [];
 				io.channels.push('user-' + user._id);
 
 

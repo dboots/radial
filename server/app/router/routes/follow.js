@@ -2,7 +2,7 @@ var User = require('../../models/User');
 var _ = require('underscore');
 
 
-module.exports = function(router, io) {	
+module.exports = function(router, io) {
 	router.route('/users/follow/:user_id')
 		/*
 		* Step 1 in Follower/Following process:
@@ -159,6 +159,7 @@ module.exports = function(router, io) {
 										notification: objNotification
 									};
 
+									io.join('user-' + followUserId);
 									//-- Emit approved notification event
 									io.dispatch('follow_approval', obj, followUserId);
 								});
@@ -181,4 +182,4 @@ module.exports = function(router, io) {
 				});
 			}); //-- end PUT
 	}); //-- end /users/follow/:user_id route
-}
+};
