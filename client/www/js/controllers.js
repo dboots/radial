@@ -181,13 +181,11 @@
 			});
 
 			$scope.approve = function(my_followUserId, my_approval) {
-				console.log(my_followUserId);
 				UserService.FollowApproval(my_followUserId, my_approval).then(function(my_data) {
-					resp = my_data.data;
+					var resp = my_data.data;
 					console.log(resp);
 
 					angular.forEach(user.followers, function(i) {
-						console.log(i);
 						console.log('checking ' + i.user._id + ' :: ' + resp.follower);
 						if (i.user._id == resp.follower.user) {
 							i.accepted = resp.accepted;
