@@ -7,6 +7,14 @@ angular.module('starter.services', [])
 
 	//var isLocal = top.location.toString().indexOf('localhost');
 	var isLocal = (currentPlatform == 'macintel') ? true : false;
+
+	switch (currentPlatform) {
+		case 'Linux':
+		case 'macintel':
+			isLocal = true;
+			break;
+	}
+
 	var serverUrl = (isLocal) ? 'http://localhost:4343' : 'http://radial-52832.onmodulus.net';
 
 	var apiSuffix = '/v1/api';
