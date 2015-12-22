@@ -51,6 +51,7 @@
 					for(var i = 0, len = userEvents.length; i < len; i++) {
 						latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
 						MapService.Circle(latLng, '#00FF00', userEvents[i]);
+						MapService.Marker(latLng);
 					}
 
 					//-- Plot User's Following events
@@ -62,6 +63,7 @@
 							latLng = L.latLng(evt.latitude, evt.longitude);
 
 							MapService.Circle(latLng, '#FF0000', evt);
+							MapService.Marker(latLng);
 						}
 					}
 				},
@@ -82,6 +84,20 @@
 								});
 							}
 						});
+					}
+				},
+
+				Marker: function(my_latLng) {
+					if (my_latLng) {
+						var icon = L.icon({
+							iconUrl: '/img/test.gif',
+							iconSize: [50,50],
+							iconAnchor: [25,25],
+						});
+
+						console.log('[MapService] Placing marker on map', my_latLng);
+
+						L.marker(my_latLng, {icon: icon}).addTo(_map);
 					}
 				},
 
