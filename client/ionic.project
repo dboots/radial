@@ -1,4 +1,11 @@
 {
   "name": "client",
-  "app_id": "711fa2b9"
+  "app_id": "711fa2b9",
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
+  ]
 }

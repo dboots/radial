@@ -90,7 +90,7 @@
 				Marker: function(my_latLng) {
 					if (my_latLng) {
 						var icon = L.icon({
-							iconUrl: '/img/test.gif',
+							iconUrl: 'img/test.gif',
 							iconSize: [50,50],
 							iconAnchor: [25,25],
 						});
