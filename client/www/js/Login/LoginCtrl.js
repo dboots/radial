@@ -22,28 +22,33 @@
 				}); //-- end $ionicPopup()
 			});
 
-			$scope.login = function() {
-				LoginService.loginUser($scope.data.email, $scope.data.password)
-					.then(function(data) {
-						if (data.data.success) {
-							SocketService.connect(data)
-								.then(function(data) {
-									//-- Store User object
-									UserService.login(data);
-									$state.go('main.map');
-								}
-							);
-						} else {
-							$ionicPopup.show({
-								title: data.data.message,
-								buttons: [
-									{ text: 'Try Again' }
-								]
-							}); //-- end $ionicPopup()
-						}
-					}
-				); //-- end .then()
-			};
+      function submitLoginRequest(credentials) {
+        var deferred = LoginService.loginUser(credentials.email, credentials.password);
+        return rx.Observable
+          .fromPromise(deferred);
+      }
+
+      $scope.$createObservableFunction('login')
+        .map(function (email, password) { return {email:email, password:password}; })
+        .flatMapLatest(submitLoginRequest)
+        .subscribe(function(response) {
+          if (response.data.success) {
+            SocketService.connect(response)
+              .then(function(data) {
+                //-- Store User object
+                UserService.login(data);
+                $state.go('main.map');
+              }
+            );
+          } else {
+            $ionicPopup.show({
+              title: response.data.message,
+              buttons: [
+                { text: 'Try Again' }
+              ]
+            }); //-- end $ionicPopup()
+          }
+        });
 
 			$scope.register = function() {
 				$state.go('register');
