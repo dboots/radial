@@ -11,7 +11,7 @@
 		var isLocal = (currentPlatform == 'macintel') ? true : false;
 
 		switch (currentPlatform) {
-			case 'Linux':
+			case 'linux':
 			case 'macintel':
 				isLocal = true;
 				break;
@@ -38,7 +38,7 @@
 
 				if (value)
 					_config[key] = value;
-				
+
 				return _config[key];
 			},
 
