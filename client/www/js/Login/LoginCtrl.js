@@ -86,14 +86,6 @@
               { text: 'Try Again' }
             ]
           }); //-- end $ionicPopup()
-        },
-        function(error) {
-          $ionicPopup.show({
-            title: "Service Issue",
-            buttons: [
-              { text: 'Try Again' }
-            ]
-          }); //-- end $ionicPopup()
         });
 
       //loginValidAuthSuccess
