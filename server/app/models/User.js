@@ -4,16 +4,7 @@
 var mongoose = require('mongoose');
 var _ = require('underscore');
 var Schema = mongoose.Schema;
-
-//-- TODO: Move to separate file
-var EventSchema = new Schema({
-		title: String,
-		description: String,
-		startDate: Date,
-		endDate: Date,
-		latitude: Number,
-		longitude: Number
-});
+var EventSchema = require('./Event').schema;
 
 var UserSchema = new Schema({
 	fname: {type: String, required: true},

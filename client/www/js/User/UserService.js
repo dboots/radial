@@ -10,6 +10,8 @@
 					if (data) {
 						window.localStorage['token'] = data.data.token;
 						_user = data.data.user;
+
+						console.log('[UserService:login]', _user);
 					}
 
 					return window.localStorage['token'];

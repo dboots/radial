@@ -50,6 +50,7 @@
 			});
 
 			$global.socket().on('add_event', function(my_event) {
+				console.log('[MainCtrl add_event]', my_event);
 				var latLng = L.latLng(my_event.latitude, my_event.longitude);
 				MapService.Circle(latLng, '#0000FF', my_event);
 				//-- TODO: Add notification to Followers. Maybe.

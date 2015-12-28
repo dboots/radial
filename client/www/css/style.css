@@ -76,3 +76,7 @@ a .badge {
 		float: left;
 		text-align: right;
 	}
+
+.gray-30 {
+	opacity: .3;
+}
