@@ -1,8 +1,8 @@
 (function () {
 	'use strict';
 
-	angular.module('app.controllers',  ['rx', 'ngCordova'])
-		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService, rx) {
+	angular.module('app.controllers')
+		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {
 			$scope.$on('$ionicView.enter', function() {
 				$scope.data = [];
 				$scope.data.email = 'fool';
