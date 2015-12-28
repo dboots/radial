@@ -22,82 +22,30 @@
 				}); //-- end $ionicPopup()
 			});
 
-      ////FILTERS
-      var invalidCredentials = function(credentials) {
-        return !credentials.email
-          || !credentials.password
-          || credentials.email === ""
-          || credentials.password === "";
-      };
-      var authFailure = function(loginResponse) {
-        return !(loginResponse.data.success);
-      };
-      ////SIGNALS
-      /*
-        The base "login" signal which is a composition of {email, password}, and a login click event.
-        NOTE: creates scope function login(), and later on in the chain, we will assume that login() is invoked with
-        // {email:'guy@example.com', password:'guyPassword'}
-       */
-      var login = $scope.$createObservableFunction('login');
-      /*
-        Invalid login signal - just filter for invalid credentials using the filter defined above
-       */
-      var loginInvalid = login.filter(invalidCredentials);
-      /*
-        Valid login signal - using the inverse of the filter defined above
-       */
-      var loginValid = login.filter(function(c){return !invalidCredentials(c)});
-      /*
-        Valid login signal combined with an http POST of credentials to /authenticate
-       */
-      var loginValidAuth = loginValid.flatMap(LoginService.rx_loginUser);
-      /*
-        A signal representing a valid login submission, a successful response from the server, but an invalid auth attempt
-       */
-      var loginValidAuthFail =
-        loginValidAuth
-          .filter(authFailure)
-          .map(function(loginResponse) {
-            return loginResponse.data.message;
-          });
-      /*
-        A signal representing successful responses from a post on /authenticate
-       */
-      var loginValidAuthSuccess =
-        loginValidAuth
-          .filter(function(a){return !authFailure(a)});
-      /*
-        Composition of valid input, submit click, OK POST to /authenticate, and socket connect
-       */
-      var authorizedAndSocketConnecting = loginValidAuthSuccess.flatMap(SocketService.rx_connect);
-      ////SUBSCRIPTIONS
-      loginInvalid
-        .subscribe(function(){
-          $ionicPopup.show({
-            title: "Username & Password Required",
-            buttons: [
-              { text: 'Continue' }
-            ]
-          });
-        });
-      loginValidAuthFail
-        .subscribe(function(message){
-          $ionicPopup.show({
-            title: message,
-            buttons: [
-              { text: 'Try Again' }
-            ]
-          }); //-- end $ionicPopup()
-        });
-      authorizedAndSocketConnecting
-        .subscribe(
-          // socket connect success
+      $scope.$createObservableFunction('login')     // the initial stream is {email,password}
+        .flatMap(LoginService.rx_loginUser)         // the stream is now a login response (func rx_loginUser takes {email,password} and returns Observable<loginResponse>
+        .do(function(loginResponse) {               // do doesn't transform the stream - we're just giving it a func to run onNext to attach behavior
+          if(!loginResponse.data.success && loginResponse.data.message) {
+            $ionicPopup.show({
+              title: loginResponse.data.message,
+              buttons: [
+                { text: 'Try Again' }
+              ]
+            }); //-- end $ionicPopup()
+          }
+        })
+        .filter(function(loginResponse) {           // filter for only successful responses - the do() above will have already shown a message
+          return loginResponse.data.success;
+        })
+        .flatMap(SocketService.rx_connect)          // the stream is now a socket connection result (rx_connect() takes param loginResponse and returns Observable<ConnResult>
+        .subscribe(                                 // subscribe to the stream - now that we're subscribed, the maps and filters above will run, and then the functions below
+          // onNext - this function runs every time an element makes it through the stream to the end
           function(data) {
             //-- Store User object
             UserService.login(data);
             $state.go('main.map');
           },
-          // socket connect fail
+          // onError - this function runs when an error happens that isn't handled - HTTP failures are handled by rx_loginUser, so this will (always?) be a socket issue.
           function(e) {
             console.log(e);
             //todo: retry? fall back to long polling? display alert?
