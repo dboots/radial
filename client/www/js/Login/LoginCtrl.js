@@ -66,6 +66,10 @@
       var loginValidAuthSuccess =
         loginValidAuth
           .filter(function(a){return !authFailure(a)});
+      /*
+        Composition of valid input, submit click, OK POST to /authenticate, and socket connect
+       */
+      var authorizedAndSocketConnecting = loginValidAuthSuccess.flatMap(SocketService.rx_connect);
 
       // SUBSCRIPTIONS
       loginInvalid
@@ -77,7 +81,6 @@
             ]
           });
         });
-
       loginValidAuthFail
         .subscribe(function(message){
           $ionicPopup.show({
@@ -88,17 +91,19 @@
           }); //-- end $ionicPopup()
         });
 
-      loginValidAuthSuccess
-        // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
-        .subscribe(function(loginResponse) {
-          SocketService.connect(loginResponse)
-            .then(function(data) {
-              //-- Store User object
-              UserService.login(data);
-              $state.go('main.map');
-            }
-          );
-        });
+      authorizedAndSocketConnecting
+        .subscribe(
+          // socket connect success
+          function(data) {
+            //-- Store User object
+            UserService.login(data);
+            $state.go('main.map');
+          },
+          // socket connect fail
+          function(e) {
+            console.log(e);
+            //todo: retry? fall back to long polling? display alert?
+          });
 
 			$scope.register = function() {
 				$state.go('register');
