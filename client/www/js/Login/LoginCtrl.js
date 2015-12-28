@@ -46,7 +46,7 @@
       /*
         Valid login signal - using the inverse of the filter defined above
        */
-      var loginValid = login.filter(function(c){return !invalidCredentials(c)}).map(function(c){console.log(c);return c});
+      var loginValid = login.filter(function(c){return !invalidCredentials(c)});
       /*
         Valid login signal combined with an http POST of credentials to /authenticate
        */
@@ -88,17 +88,17 @@
           }); //-- end $ionicPopup()
         });
 
-      //loginValidAuthSuccess
-      //  // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
-      //  .subscribe(function(loginResponse) {
-      //    SocketService.connect(loginResponse)
-      //      .then(function(data) {
-      //        //-- Store User object
-      //        UserService.login(data);
-      //        $state.go('main.map');
-      //      }
-      //    );
-      //  });
+      loginValidAuthSuccess
+        // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
+        .subscribe(function(loginResponse) {
+          SocketService.connect(loginResponse)
+            .then(function(data) {
+              //-- Store User object
+              UserService.login(data);
+              $state.go('main.map');
+            }
+          );
+        });
 
 			$scope.register = function() {
 				$state.go('register');
