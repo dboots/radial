@@ -22,21 +22,21 @@
 				}); //-- end $ionicPopup()
 			});
 
-      // FILTERS
+      ////FILTERS
       var invalidCredentials = function(credentials) {
         return !credentials.email
           || !credentials.password
           || credentials.email === ""
           || credentials.password === "";
       };
-
       var authFailure = function(loginResponse) {
         return !(loginResponse.data.success);
       };
-
-      // SIGNALS
+      ////SIGNALS
       /*
-        The base "login" signal which is a composition of {email, password}, and a login click event
+        The base "login" signal which is a composition of {email, password}, and a login click event.
+        NOTE: creates scope function login(), and later on in the chain, we will assume that login() is invoked with
+        // {email:'guy@example.com', password:'guyPassword'}
        */
       var login = $scope.$createObservableFunction('login');
       /*
@@ -70,8 +70,7 @@
         Composition of valid input, submit click, OK POST to /authenticate, and socket connect
        */
       var authorizedAndSocketConnecting = loginValidAuthSuccess.flatMap(SocketService.rx_connect);
-
-      // SUBSCRIPTIONS
+      ////SUBSCRIPTIONS
       loginInvalid
         .subscribe(function(){
           $ionicPopup.show({
@@ -90,7 +89,6 @@
             ]
           }); //-- end $ionicPopup()
         });
-
       authorizedAndSocketConnecting
         .subscribe(
           // socket connect success
