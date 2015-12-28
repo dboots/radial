@@ -2,14 +2,18 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.factory('LoginService', ['$global', '$http', function($global, $http) {
+		.factory('LoginService', ['$global', '$http', 'rx', function($global, $http, rx) {
+      var loginUser = function(email, password) {
+        return $http.post($global.config('api') + '/authenticate', {
+          email: email,
+          password: password
+        });
+      };
 			return {
-				loginUser: function(email, password) {
-					return $http.post($global.config('api') + '/authenticate', {
-						email: email,
-						password: password
-					});
-				}
+				loginUser: loginUser,
+        rx_loginUser:function(credentials) {
+          return rx.Observable.fromPromise(loginUser(credentials.email, credentials.password))
+        }
 			};
 		}]);
 })();

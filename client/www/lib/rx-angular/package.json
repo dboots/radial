@@ -1,0 +1,100 @@
+{
+  "_args": [
+    [
+      "rx-angular",
+      "/home/zgray/code/repos/radial/client"
+    ]
+  ],
+  "_from": "rx-angular@*",
+  "_id": "rx-angular@1.0.4",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/rx-angular",
+  "_nodeVersion": "4.2.0",
+  "_npmUser": {
+    "email": "matthew.podwysocki@gmail.com",
+    "name": "mattpodwysocki"
+  },
+  "_npmVersion": "2.14.7",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "rx-angular",
+    "raw": "rx-angular",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "*",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/rx-angular/-/rx-angular-1.0.4.tgz",
+  "_shasum": "20c05db757a4c7ef2f64e92309a7c27bbaa3aa80",
+  "_shrinkwrap": null,
+  "_spec": "rx-angular",
+  "_where": "/home/zgray/code/repos/radial/client",
+  "author": {
+    "name": "Microsoft"
+  },
+  "bugs": {
+    "url": "https://github.com/Reactive-Extensions/rx.angular.js/issues"
+  },
+  "dependencies": {
+    "rx": "*"
+  },
+  "description": "Library for bridging between RxJS and AngularJS.",
+  "devDependencies": {
+    "angular": "^1.3.15",
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-qunit": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-ng-annotate": "^0.10.0",
+    "load-grunt-tasks": "*"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "20c05db757a4c7ef2f64e92309a7c27bbaa3aa80",
+    "tarball": "http://registry.npmjs.org/rx-angular/-/rx-angular-1.0.4.tgz"
+  },
+  "gitHead": "a5e295028a11e07833389fd2070f1afbb1516d78",
+  "homepage": "https://github.com/Reactive-Extensions/rx.angular.js",
+  "jam": {
+    "main": "dist/rx.angular.js"
+  },
+  "keywords": [
+    "Angular",
+    "AngularJS",
+    "FRP",
+    "Reactive",
+    "Rx",
+    "RxJS"
+  ],
+  "licenses": [
+    {
+      "type": "Apache License, Version 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ],
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "mattpodwysocki",
+      "email": "matthew.podwysocki@gmail.com"
+    }
+  ],
+  "name": "rx-angular",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reactive-Extensions/rx.angular.js.git"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "title": "The Reactive Extensions Bindings for the AngularJS.",
+  "version": "1.0.4"
+}

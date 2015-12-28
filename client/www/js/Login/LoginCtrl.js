@@ -1,8 +1,8 @@
 (function () {
 	'use strict';
 
-	angular.module('app.controllers')
-		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {
+	angular.module('app.controllers',  ['rx', 'ngCordova'])
+		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService, rx) {
 			$scope.$on('$ionicView.enter', function() {
 				$scope.data = [];
 				$scope.data.email = 'fool';
@@ -22,32 +22,89 @@
 				}); //-- end $ionicPopup()
 			});
 
-      function submitLoginRequest(credentials) {
-        var deferred = LoginService.loginUser(credentials.email, credentials.password);
-        return rx.Observable
-          .fromPromise(deferred);
-      }
+      // FILTERS
+      var invalidCredentials = function(credentials) {
+        return !credentials.email
+          || !credentials.password
+          || credentials.email === ""
+          || credentials.password === "";
+      };
 
-      $scope.$createObservableFunction('login')
-        .map(function (email, password) { return {email:email, password:password}; })
-        .flatMapLatest(submitLoginRequest)
-        .subscribe(function(response) {
-          if (response.data.success) {
-            SocketService.connect(response)
-              .then(function(data) {
-                //-- Store User object
-                UserService.login(data);
-                $state.go('main.map');
-              }
-            );
-          } else {
-            $ionicPopup.show({
-              title: response.data.message,
-              buttons: [
-                { text: 'Try Again' }
-              ]
-            }); //-- end $ionicPopup()
-          }
+      var authFailure = function(loginResponse) {
+        return !(loginResponse.data.success);
+      };
+
+      // SIGNALS
+      /*
+        The base "login" signal which is a composition of {email, password}, and a login click event
+       */
+      var login = $scope.$createObservableFunction('login');
+      /*
+        Invalid login signal - just filter for invalid credentials using the filter defined above
+       */
+      var loginInvalid = login.filter(invalidCredentials);
+      /*
+        Valid login signal - using the inverse of the filter defined above
+       */
+      var loginValid = login.filter(function(c){return !invalidCredentials(c)});
+      /*
+        Valid login signal combined with an http POST of credentials to /authenticate, retried x3
+       */
+      var loginValidAuth =
+        loginValid
+          .flatMapLatest(LoginService.rx_loginUser)
+          .retry(3);
+      /*
+        A signal representing a valid login submission but a non-success response from the server - in both cases,
+        map to a string describing the error
+       */
+      var loginValidAuthFail =
+        loginValidAuth
+          .filter(authFailure)
+          .map(function(loginResponse) {
+            return loginResponse.data.message;
+          })
+          .catch(function(e){
+            return rx.Observable.just("Service Issue")
+          });
+      /*
+        A signal representing successful responses from a post on /authenticate
+       */
+      var loginValidAuthSuccess =
+        loginValidAuth
+          .filter(function(a){return !authFailure(a)});
+
+      // SUBSCRIPTIONS
+      loginInvalid
+        .subscribe(function(){
+          $ionicPopup.show({
+            title: "Username & Password Required",
+            buttons: [
+              { text: 'Continue' }
+            ]
+          });
+        });
+
+      loginValidAuthFail
+        .subscribe(function(message){
+          $ionicPopup.show({
+            title: message,
+            buttons: [
+              { text: 'Try Again' }
+            ]
+          }); //-- end $ionicPopup()
+        });
+
+      loginValidAuthSuccess
+        // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
+        .subscribe(function(loginResponse) {
+          SocketService.connect(loginResponse)
+            .then(function(data) {
+              //-- Store User object
+              UserService.login(data);
+              $state.go('main.map');
+            }
+          );
         });
 
 			$scope.register = function() {
