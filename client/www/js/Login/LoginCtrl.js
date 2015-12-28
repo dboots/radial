@@ -46,26 +46,19 @@
       /*
         Valid login signal - using the inverse of the filter defined above
        */
-      var loginValid = login.filter(function(c){return !invalidCredentials(c)});
+      var loginValid = login.filter(function(c){return !invalidCredentials(c)}).map(function(c){console.log(c);return c});
       /*
-        Valid login signal combined with an http POST of credentials to /authenticate, retried x3
+        Valid login signal combined with an http POST of credentials to /authenticate
        */
-      var loginValidAuth =
-        loginValid
-          .flatMapLatest(LoginService.rx_loginUser)
-          .retry(3);
+      var loginValidAuth = loginValid.flatMap(LoginService.rx_loginUser);
       /*
-        A signal representing a valid login submission but a non-success response from the server - in both cases,
-        map to a string describing the error
+        A signal representing a valid login submission, a successful response from the server, but an invalid auth attempt
        */
       var loginValidAuthFail =
         loginValidAuth
           .filter(authFailure)
           .map(function(loginResponse) {
             return loginResponse.data.message;
-          })
-          .catch(function(e){
-            return rx.Observable.just("Service Issue")
           });
       /*
         A signal representing successful responses from a post on /authenticate
@@ -93,19 +86,27 @@
               { text: 'Try Again' }
             ]
           }); //-- end $ionicPopup()
+        },
+        function(error) {
+          $ionicPopup.show({
+            title: "Service Issue",
+            buttons: [
+              { text: 'Try Again' }
+            ]
+          }); //-- end $ionicPopup()
         });
 
-      loginValidAuthSuccess
-        // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
-        .subscribe(function(loginResponse) {
-          SocketService.connect(loginResponse)
-            .then(function(data) {
-              //-- Store User object
-              UserService.login(data);
-              $state.go('main.map');
-            }
-          );
-        });
+      //loginValidAuthSuccess
+      //  // todo: instead of subscribing here, flatMap this socket connection in and subscribe the results of the composition
+      //  .subscribe(function(loginResponse) {
+      //    SocketService.connect(loginResponse)
+      //      .then(function(data) {
+      //        //-- Store User object
+      //        UserService.login(data);
+      //        $state.go('main.map');
+      //      }
+      //    );
+      //  });
 
 			$scope.register = function() {
 				$state.go('register');

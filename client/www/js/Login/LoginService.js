@@ -13,6 +13,12 @@
 				loginUser: loginUser,
         rx_loginUser:function(credentials) {
           return rx.Observable.fromPromise(loginUser(credentials.email, credentials.password))
+            // catch HTTP errors and return a non-success object with a message
+            .catch(function(e) {
+              return rx.Observable.just({
+                data: { message:"Service Issue" }
+              });
+            });
         }
 			};
 		}]);
