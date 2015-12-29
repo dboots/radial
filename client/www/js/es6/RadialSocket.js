@@ -1,7 +1,21 @@
 /**
  * A reactive wrapper around a socket.io socket.
  */
-class RxSocket {
+class RadialSocket {
+  get follower() {
+    let self = this;
+    return {
+      get approvals() { return self.rx_on('follow_approval') },
+      get requests() { return self.rx_on('follow_request') }
+    }
+  }
+  get event() {
+    let self = this;
+    return {
+      get adds() { return self.rx_on('add_event') }
+    }
+  }
+
   constructor(endpoint, settings) {
     this.endpoint = endpoint;
     this.settings = settings;
@@ -40,3 +54,4 @@ class RxSocket {
     });
   }
 }
+

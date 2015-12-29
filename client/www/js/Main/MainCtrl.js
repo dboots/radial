@@ -34,13 +34,13 @@
         $scope.$apply();
       }
 
-      SocketService.sharedSocket().rx_on('follow_approval')
+      SocketService.sharedSocket().follower.approvals
         .subscribe(next => onFollowEvent('Follow request approved!', next));
 
-      SocketService.sharedSocket().rx_on('follow_request')
+      SocketService.sharedSocket().follower.requests
         .subscribe(next => onFollowEvent('Follow request!', next));
 
-      SocketService.sharedSocket().rx_on('add_event')
+      SocketService.sharedSocket().event.adds
         .subscribe(next => {
           var latLng = L.next(my_event.latitude, next.longitude);
           MapService.Circle(latLng, '#0000FF', next);

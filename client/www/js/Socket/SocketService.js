@@ -2,25 +2,24 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.factory('SocketService', ['$global', '$q', 'rx', function($global) {
+		.factory('SocketService', ['$global', '$q', 'rx', ($global) => {
+      let _rxSocket;
 
-      var _rxSocket;
-
-      var sharedSocket = function() {
+      let sharedSocket = () => {
         if(!_rxSocket) throw new Error ("Socket must be initialized before use!");
         return _rxSocket;
       };
 
-      var disconnectSharedSocket = function() {
+      let disconnectSharedSocket = () => {
         if(_rxSocket) _rxSocket.disconnect();
       };
 
-      var initSharedSocket = function(token) {
-        var ioSocketSettings = {
+      let initSharedSocket = token => {
+        let ioSocketSettings = {
           query: 'token=' + token,
           forceNew: true
         };
-        _rxSocket = new RxSocket($global.config('server'), ioSocketSettings);
+        _rxSocket = new RadialSocket($global.config('server'), ioSocketSettings);
         return _rxSocket.connect();
       };
 
