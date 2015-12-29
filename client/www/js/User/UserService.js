@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.factory('UserService', function($global, $http) {
+		.factory('UserService', function($global, $http, SocketService) {
 			var _user;
 
 			var UserService = {
@@ -19,10 +19,7 @@
 					window.localStorage['token'] = null;
 					_user = null;
 
-					if ($global.socket()) {
-						$global.socket().disconnect();
-						$global.socket(null);
-					}
+					SocketService.disconnectSharedSocket();
 				},
 
 				User: function(my_user) {

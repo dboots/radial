@@ -1,4 +1,9 @@
 {
   "name": "client",
-  "app_id": "711fa2b9"
+  "app_id": "711fa2b9",
+  "gulpStartupTasks": [
+      "babel",
+      "sass",
+      "watch"
+   ]
 }

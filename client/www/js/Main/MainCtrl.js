@@ -2,60 +2,52 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.controller('MainCtrl', function($scope, SearchService, MapService, UserService, $timeout, $ionicPopup, $global) {
-			$scope.$on('$ionicView.enter', function(viewEvent) {
-				var user = UserService.User();
+		.controller('MainCtrl', ($scope, SearchService, MapService, UserService, SocketService, $timeout, $ionicPopup, rx) => {
 
-				$scope.query = [];
-				$scope.searchResults = [];
-				$scope.notificationCount = 0;
+      var searchTimeout = true;
 
-				//-- Tally unread notification count
-				angular.forEach(user.notifications, function(i, v) {
-					if (!i.read)
-						$scope.notificationCount++;
-				});
+      $scope.$on('$ionicView.enter', viewEvent => {
+        var user = UserService.User();
+        user.notifications = user.notifications || [];
+        user.followers = user.followers || [];
+        $scope.unreadNotificationCount = 0;
+        $scope.query = [];
+        $scope.searchResults = [];
+        rx.Observable.from(user.notifications)
+          .filter(notification => !notification.read)
+          .observeOn(rx.Scheduler.currentThread) // run synchronously
+          .subscribe(notification => { $scope.unreadNotificationCount++ });
+        $scope.user = user;
+      });
 
-				$scope.user = user;
-			});
+      function onFollowEvent(msg, eventData) {
+        $ionicPopup.show({
+          title: '!!',
+          template: msg,
+          buttons: [
+            { text: 'Ok' }
+          ]
+        }); //-- end $ionicPopup()
+        $scope.user.notifications.push(eventData.notification);
+        $scope.user.followers.push(eventData.follower);
+        $scope.unreadNotificationCount++;
+        $scope.$apply();
+      }
 
-			var searchTimeout = true;
+      SocketService.sharedSocket().rx_on('follow_approval')
+        .subscribe(next => onFollowEvent('Follow request approved!', next));
 
-			$global.socket().on('follow_approval', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request approved!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
+      SocketService.sharedSocket().rx_on('follow_request')
+        .subscribe(next => onFollowEvent('Follow request!', next));
 
-				$scope.user.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.following.push(my_data.following);
-			});
+      SocketService.sharedSocket().rx_on('add_event')
+        .subscribe(next => {
+          var latLng = L.next(my_event.latitude, next.longitude);
+          MapService.Circle(latLng, '#0000FF', next);
+          //-- TODO: Add notification to Followers. Maybe.
+        });
 
-			$global.socket().on('follow_request', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
-
-				$scope.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.followers.push(my_data.follower);
-			});
-
-			$global.socket().on('add_event', function(my_event) {
-				var latLng = L.latLng(my_event.latitude, my_event.longitude);
-				MapService.Circle(latLng, '#0000FF', my_event);
-				//-- TODO: Add notification to Followers. Maybe.
-			});
-
-			$scope.follow = function(my_followUserId) {
+			$scope.follow = (my_followUserId) => {
 				UserService.Follow(my_followUserId).then(function(data) {
 					$ionicPopup.show({
 						title: '!!',
@@ -67,7 +59,7 @@
 				});
 			}; //-- end $scope.follow
 
-			$scope.search = function() {
+			$scope.search = () => {
 				if ($scope.query.val && searchTimeout) {
 					//-- Send uid with search request to exclude requesting user.
 					var uid = UserService.User()._id;
@@ -77,7 +69,7 @@
 					//-- above $timeout() is finished.
 					searchTimeout = false;
 
-					$timeout(function() {
+					$timeout(() => {
 						searchTimeout = true;
 					}, 1000);
 

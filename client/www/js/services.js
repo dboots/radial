@@ -40,13 +40,6 @@
 					_config[key] = value;
 
 				return _config[key];
-			},
-
-			socket: function(my_socket) {
-				if (my_socket)
-					_socket = my_socket;
-
-				return _socket;
 			}
 		};
 	});
