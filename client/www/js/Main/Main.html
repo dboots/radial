@@ -28,15 +28,15 @@
 			<ion-header-bar class="bar-assertive">
 				<h1 class="title"></h1>
 			</ion-header-bar>
-			<ion-content>
+			<ion-content ng-controller="MainCtrl">
 				<div id="leftnav">
 					<p class="subtitle">Welcome, {{user.fname}}</p>
 					<!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
 					<div id="leftnav-search">
 						<p class="subtitle">Follow a friend</p>
 						<div class="item item-input">
-							<input type="text" placeholder="Search by email..." ng-model="query.val">
-							<a class="btn" ng-click="search()"><i class="icon ion-search"></i></a>
+							<input type="text" placeholder="Search by email..." ng-model="searchString">
+							<!--<a class="btn" ng-click="search(searchString)"><i class="icon ion-search"></i></a>-->
 						</div>
 
 						<div id="result-items">

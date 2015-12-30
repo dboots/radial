@@ -2,10 +2,17 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.factory('UserService', function($global, $http, SocketService) {
+		.factory('UserService', function($global, $http, SocketService, rx) {
 			var _user;
 
-			var UserService = {
+      var follow = function(my_followUserId) {
+        return $http.post($global.config('api') + '/users/follow/' + _user._id, {
+          followUserId: my_followUserId,
+          token: window.localStorage['token']
+        });
+      };
+
+			return {
 				login: function(data) {
 					if (data) {
 						window.localStorage['token'] = data.data.token;
@@ -29,12 +36,11 @@
 					return _user;
 				},
 
-				Follow: function(my_followUserId) {
-					return $http.post($global.config('api') + '/users/follow/' + _user._id, {
-						followUserId: my_followUserId,
-						token: window.localStorage['token']
-					});
-				},
+				Follow: follow,
+
+        rx_follow: (my_followUserId) =>
+          rx.Observable.fromPromise(follow(my_followUserId))
+            .catch( e => rx.Observable.just({data: { message:"Service Issue" }})),
 
 				FollowApproval: function(my_followUserId, my_approval) {
 					return $http.put($global.config('api') + '/users/follow/' + _user._id, {
@@ -76,7 +82,5 @@
 					return evt;
 				}
 			};
-
-			return UserService;
 		});
 }());

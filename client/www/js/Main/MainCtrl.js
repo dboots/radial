@@ -4,20 +4,20 @@
 	angular.module('app.controllers')
 		.controller('MainCtrl', ($scope, SearchService, MapService, UserService, SocketService, $timeout, $ionicPopup, rx) => {
 
-      var searchTimeout = true;
+      var user = UserService.User();
+      user.notifications = user.notifications || [];
+      user.followers = user.followers || [];
+      $scope.unreadNotificationCount = 0;
+      $scope.searchString = '';
+      $scope.searchResults = [];
+      rx.Observable.from(user.notifications)
+        .filter(notification => !notification.read)
+        .observeOn(rx.Scheduler.currentThread) // run synchronously
+        .subscribe(notification => { $scope.unreadNotificationCount++ });
+      $scope.user = user;
 
       $scope.$on('$ionicView.enter', viewEvent => {
-        var user = UserService.User();
-        user.notifications = user.notifications || [];
-        user.followers = user.followers || [];
-        $scope.unreadNotificationCount = 0;
-        $scope.query = [];
-        $scope.searchResults = [];
-        rx.Observable.from(user.notifications)
-          .filter(notification => !notification.read)
-          .observeOn(rx.Scheduler.currentThread) // run synchronously
-          .subscribe(notification => { $scope.unreadNotificationCount++ });
-        $scope.user = user;
+
       });
 
       function onFollowEvent(msg, eventData) {
@@ -47,36 +47,29 @@
           //-- TODO: Add notification to Followers. Maybe.
         });
 
-			$scope.follow = (my_followUserId) => {
-				UserService.Follow(my_followUserId).then(function(data) {
-					$ionicPopup.show({
-						title: '!!',
-						template: data.data.message,
-						buttons: [
-							{ text: 'Ok' }
-						]
-					}); //-- end $ionicPopup()
-				});
-			}; //-- end $scope.follow
+      $scope.$createObservableFunction('follow')
+        .flatMap(UserService.rx_follow)
+        .subscribe(followResponse => {
+          $ionicPopup.show({
+            title: '!!',
+            template: followResponse.data.message,
+            buttons: [
+              { text: 'Ok' }
+            ]
+          });
+        });
 
-			$scope.search = () => {
-				if ($scope.query.val && searchTimeout) {
-					//-- Send uid with search request to exclude requesting user.
-					var uid = UserService.User()._id;
-					var query = $scope.query.val;
+      $scope
+        .$toObservable('searchString')
+        .filter(o => o.newValue)
+        .sample(300)
+        .map(searchStringObservable => searchStringObservable.newValue)
+        .distinctUntilChanged()
+        .flatMapLatest(searchString => SearchService.rx_search(searchString, UserService.User()._id))
+        .subscribe(searchResponse => {
+          $scope.searchResults = searchResponse.data.result;
+          $scope.$apply();
+        });
 
-					//-- This will be reset to true and allow another search request after the
-					//-- above $timeout() is finished.
-					searchTimeout = false;
-
-					$timeout(() => {
-						searchTimeout = true;
-					}, 1000);
-
-					SearchService.Search(query, uid).then(function(data) {
-						$scope.searchResults = data.data.result;
-					});
-				}
-			};
 		});
 }());
