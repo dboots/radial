@@ -42,7 +42,7 @@
 
       SocketService.sharedSocket().event.adds
         .subscribe(next => {
-          var latLng = L.next(my_event.latitude, next.longitude);
+          var latLng = L.next(next.latitude, next.longitude);
           MapService.Circle(latLng, '#0000FF', next);
           //-- TODO: Add notification to Followers. Maybe.
         });
