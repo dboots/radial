@@ -4,6 +4,7 @@
 
 	.factory('$global', function() {
 		var currentPlatform = ionic.Platform.platform();
+		var isLocal = false;
 
 		switch (currentPlatform) {
 			case 'Linux':
