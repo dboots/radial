@@ -3,12 +3,8 @@
 	angular.module('app.services', [])
 
 	.factory('$global', function() {
-		//-- TODO: Debug local/remote testing. Doesn't seem to be connecting to proper urls when local and/or emulating
-		var proxy = 'http://localhost:1337/';
 		var currentPlatform = ionic.Platform.platform();
-
-		//var isLocal = top.location.toString().indexOf('localhost');
-		var isLocal = (currentPlatform == 'macintel') ? true : false;
+		var isLocal = false;
 
 		switch (currentPlatform) {
 			case 'linux':
@@ -18,7 +14,6 @@
 		}
 
 		var serverUrl = (isLocal) ? 'http://localhost:4343' : 'http://radial-52832.onmodulus.net';
-
 		var apiSuffix = '/v1/api';
 		var apiUrl = serverUrl + apiSuffix;
 

@@ -51,6 +51,7 @@
 					for(var i = 0, len = userEvents.length; i < len; i++) {
 						latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
 						MapService.Circle(latLng, '#00FF00', userEvents[i]);
+						MapService.Marker(latLng);
 					}
 
 					//-- Plot User's Following events
@@ -62,17 +63,23 @@
 							latLng = L.latLng(evt.latitude, evt.longitude);
 
 							MapService.Circle(latLng, '#FF0000', evt);
+							MapService.Marker(latLng);
 						}
 					}
 				},
 
 				Circle: function(my_latLng, my_color, my_event) {
 					//-- 1 mile = 1609.34 meters
+
+					//-- TODO: Testing different circle/marker styles to be used in conjunction
+					//-- with Event age. i.e. 1h past Event, 1h until Event, etc
+					var circleOpts = MapService.CircleOpts(my_event.age, my_color);
+
 					if (my_latLng) {
 						var c = L.circle(my_latLng, 800, {
 							stroke: false,
-							color: my_color,
-							fillOpacity: 0.8
+							color: circleOpts.color,
+							fillOpacity: circleOpts.opacity
 						}).addTo(_map);
 
 						c.on('click', function(e) {
@@ -82,6 +89,51 @@
 								});
 							}
 						});
+					}
+				},
+
+				CircleOpts: function(my_eventAge, my_color) {
+					var circleOpts = {
+						color: null,
+						opacity: null
+					};
+
+					console.log('[MapService:CircleOpts]', my_eventAge);
+
+					if (my_eventAge > 6) {
+						//-- Event expired 6+ hours ago
+						circleOpts.color = '#999999';
+						circleOpts.opacity = 0.3;
+					} else if (my_eventAge > 3) {
+						//-- Event expired 3-6 hours ago
+						circleOpts.color = '#999999';
+						circleOpts.opacity = 0.8;
+					} else if (my_eventAge < -6) {
+						//-- 6+ hours in the future
+						circleOpts.color = my_color;
+						circleOpts.opacity = 0.3;
+					} else if (my_eventAge < -3) {
+						//-- 3-6 hours in the future
+						circleOpts.color = my_color;
+						circleOpts.opacity = 0.8;
+					} else {
+						circleOpts.color = my_color;
+						circleOpts.opacity = 1;
+					}
+
+					return circleOpts;
+				},
+
+				Marker: function(my_latLng) {
+					if (my_latLng) {
+						var icon = L.icon({
+							iconUrl: 'img/test.gif',
+							iconSize: [50,50],
+							iconAnchor: [25,25],
+							className: 'gray-30'
+						});
+
+						L.marker(my_latLng, {icon: icon}).addTo(_map);
 					}
 				},
 
