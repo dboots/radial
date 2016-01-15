@@ -11,7 +11,6 @@
 				angular.forEach(user.notifications, function(i, v) {
 					if (!i.read) {
 						i.read = true;
-						console.log('setting ' + i.title + ' read to true');
 					}
 				});
 

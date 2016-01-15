@@ -21,26 +21,26 @@ module.exports = function(router, io) {
 			//-- Index to determine if user has already requested to follow
 			var isFollower = false;
 
-			//-- Notification to be inserted into followUser's queue
-			var objNotification = {
-				title: 'New follower request!',
-				date: new Date()
-			};
-
 			User.findById(userId, function(err, user) {
 				if (err)
-					console.log(err);
+					console.log('[/app/router/routes/follow.js] Error:', err);
+
+				//-- Notification to be inserted into followUser's queue
+				var objNotification = {
+					title: user.fname + ' would like to follow you!',
+					date: new Date(),
+					link: 'followers'
+				};
 
 				//-- TOO: Convert to schema method
 				//-- Add follower and notification to User requesting to be followed
 				User.findById(followUserId, function(err, followUser) {
 					_.each(followUser.followers, function(i) {
+						console.log(i);
 						if (i.user.equals(user._id)) {
 							isFollower = true;
 						}
 					});
-
-					console.log(isFollower);
 
 					if (!isFollower) {
 						followUser.followers.push({
@@ -51,7 +51,7 @@ module.exports = function(router, io) {
 						followUser.notifications.push(objNotification);
 
 						followUser.save(function(err, doc) {
-							if (err) console.log(err);
+							if (err) console.log('[/app/router/routes/follow.js] Error:', err);
 
 							var obj = {
 								follower: {
@@ -94,26 +94,25 @@ module.exports = function(router, io) {
 			//-- Subject of follow request
 			var followUserId = req.body.followUserId;
 
-			console.log(followUserId);
-
 			//-- User's request response (true/false)
 			var accepted = req.body.accepted;
 
 			//-- Index to determine if user has already been approved
 			var isFollower = false;
 
-			//-- Notification to be inserted into followUser's queue
-			var objNotification = {
-				title: 'Follow request approved!',
-				date: new Date()
-			};
-
 			//-- Follower object to send back to user's client
 			var objFollower = {};
 
 			//-- Lookup user that requested follow
 			User.findById(userId, function(err, user) {
-				if (err) console.log(err);
+				if (err) console.log('[/app/router/routes/follow.js] Error:', err);
+
+				//-- Notification to be inserted into followUser's queue
+				var objNotification = {
+					title: user.fname + ' has approved your request!',
+					date: new Date(),
+					link: 'following'
+				};
 
 				//-- Update user's follower collection with decision and date
 				_.each(user.followers, function(i) {
@@ -125,14 +124,12 @@ module.exports = function(router, io) {
 
 				//-- Save user document and dispatch approval
 				user.save(function(err) {
-					if (err) console.log(err);
+					if (err) console.log('[/app/router/routes/follow.js] Error:', err);
 
 					if (accepted) {
-						console.log(followUserId);
 						//-- Lookup user that requested to follow
 						User.findById(followUserId, function(err, follower) {
 							//-- Make sure follower isn't added more than once.
-							console.log(follower);
 							_.each(follower.following, function(i) {
 								if (i.user.equals(userId))
 									isFollower = true;

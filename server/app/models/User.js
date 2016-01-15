@@ -28,7 +28,8 @@ var UserSchema = new Schema({
 	notifications: [{
 		title: {type: String, required: true},
 		date: { type: Date, required: true},
-		read: { type: Boolean, default: false }
+		read: { type: Boolean, default: false },
+		link: { type: String }
 	}]
 });
 
