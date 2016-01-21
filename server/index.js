@@ -10,6 +10,7 @@ var config = require('./config');
 
 require('./setup')(app);
 var api = require('./app/router/router.js')(app, io, config);
+var schedule = require('./app/schedule/schedule');
 
 
 var mongoose = require('mongoose');
