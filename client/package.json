@@ -21,10 +21,10 @@
     "cordova-plugin-splashscreen",
     "com.ionic.keyboard",
     "cordova-plugin-camera",
-    "cordova-plugin-crosswalk-webview"
+    "cordova-plugin-local-notifications"
   ],
   "cordovaPlatforms": [
-    "android",
-    "ios"
+    "ios",
+    "android"
   ]
 }
