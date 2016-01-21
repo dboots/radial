@@ -30,7 +30,7 @@
 					]
 				}); //-- end $ionicPopup()
 
-				$scope.user.notificationCount++;
+				$scope.notificationCount++;
 				$scope.user.notifications.push(my_data.notification);
 				$scope.user.following.push(my_data.following);
 			});
@@ -46,7 +46,7 @@
 
 				$scope.notificationCount++;
 				$scope.user.notifications.push(my_data.notification);
-				$scope.user.followers.push(my_data.follower);
+				$scope.user.following.push(my_data.follower);
 			});
 
 			$global.socket().on('add_event', function(my_event) {

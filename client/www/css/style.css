@@ -28,7 +28,11 @@ a .badge {
 }
 
 .icon-xl {
-	font-size: 24px;
+	font-size: 125%;
+}
+
+.icon-link {
+	cursor: pointer;
 }
 
 .icon-list a {
