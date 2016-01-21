@@ -31,11 +31,25 @@ var UserSchema = new Schema({
 		read: { type: Boolean, default: false },
 		link: { type: String }
 	}]
+}, {
+	toObject: {
+		virtuals: true,
+		getters: true
+	},
+	toJSON: {
+		virtuals: true,
+		getters: true
+	}
 });
 
 UserSchema.methods.isFollowing = function(userId) {
 	console.log('UserSchema.methods.isFollowing');
 	console.log(userId);
+};
+
+UserSchema.methods.archiveEvents = function() {
+	console.log('[/app/models/User.js] archiveEvents', this);
+	return this;
 };
 
 module.exports = mongoose.model('User', UserSchema);
