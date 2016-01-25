@@ -23,10 +23,10 @@ var EventSchema = new Schema({
 	}
 });
 
+//-- Calcuate how many hours old an event is
+//-- TODO: Convert to object containing {minutes,hours,days}
 EventSchema.virtual('age').get(function() {
-	var age = (new Date() - this.endDate) / (60 * 60 * 1000);
-	console.log('[/Models/Event.js] Age calculated as ' + age + ' with end date of ' + this.endDate);
-	return age;
+	return (new Date() - this.endDate) / (60 * 60 * 1000);
 });
 
 module.exports = mongoose.model('Event', EventSchema);

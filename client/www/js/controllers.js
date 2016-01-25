@@ -91,13 +91,17 @@
 		}) //-- end RegisterCtrl
 
 		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService) {
-			var eventId = $stateParams.id;
+			$scope.$on('$ionicView.enter', function(e){
+				var eventId = $stateParams.id;
+				var user = UserService.User();
 
-			$scope.event = UserService.GetEvent(eventId);
+				$scope.event = EventService.Event(eventId, user);
+				$scope.isOwner = EventService.isOwner(eventId, user);
 
-			$scope.owner = function() {
-				return (EventService.Events);
-			};
+				console.log('[EventDetailCtrl] User: ', user);
+				console.log('[EventDetailCtrl] Event: ', eventId);
+				console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
+			});
 		})
 
 		.controller('EventCtrl', function($state, $stateParams, $scope, EventService, UserService) {

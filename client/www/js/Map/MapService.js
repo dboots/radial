@@ -51,7 +51,7 @@
 					for(var i = 0, len = userEvents.length; i < len; i++) {
 						latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
 						MapService.Circle(latLng, '#00FF00', userEvents[i]);
-						MapService.Marker(latLng);
+						MapService.Marker(latLng, userEvents[i]);
 					}
 
 					//-- Plot User's Following events
@@ -63,7 +63,7 @@
 							latLng = L.latLng(evt.latitude, evt.longitude);
 
 							MapService.Circle(latLng, '#FF0000', evt);
-							MapService.Marker(latLng);
+							MapService.Marker(latLng, evt);
 						}
 					}
 				},
@@ -83,11 +83,15 @@
 						}).addTo(_map);
 
 						c.on('click', function(e) {
-							if (my_event._id) {
-								$state.go('main.event', {
-									'id': my_event._id
-								});
-							}
+							MapService.EventClick(my_event);
+						});
+					}
+				},
+
+				EventClick: function(my_event) {
+					if (my_event._id) {
+						$state.go('main.event', {
+							'id': my_event._id
 						});
 					}
 				},
@@ -124,7 +128,7 @@
 					return circleOpts;
 				},
 
-				Marker: function(my_latLng) {
+				Marker: function(my_latLng, my_event) {
 					if (my_latLng) {
 						var icon = L.icon({
 							iconUrl: 'img/test.gif',
@@ -133,7 +137,13 @@
 							className: 'gray-30'
 						});
 
-						L.marker(my_latLng, {icon: icon}).addTo(_map);
+						var marker = L.marker(my_latLng, {icon: icon});
+
+						marker.on('click', function(e) {
+							MapService.EventClick(my_event);
+						});
+
+						marker.addTo(_map);
 					}
 				},
 
