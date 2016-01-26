@@ -30,8 +30,11 @@
 					//--var user = UserService.User();
 
 					L.mapbox.accessToken = _mapboxToken;
-					_map = L.mapbox.map(_mapElement, _mapId, { 'minZoom': 12, 'maxZoom': 15})
-						.setView([my_position.coords.latitude, my_position.coords.longitude], 12);
+					_map = L.mapbox.map(_mapElement, _mapId, {
+						'minZoom': 12,
+						'maxZoom': 15,
+						'zoomControl': false
+					}).setView([my_position.coords.latitude, my_position.coords.longitude], 12);
 
 					//--MapService.PlotEvents(user.events);
 
@@ -101,8 +104,6 @@
 						color: null,
 						opacity: null
 					};
-
-					console.log('[MapService:CircleOpts]', my_eventAge);
 
 					if (my_eventAge > 6) {
 						//-- Event expired 6+ hours ago

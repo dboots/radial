@@ -7,6 +7,22 @@ p.subtitle {
 	margin: 0;
 }
 
+#search {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 98%;
+	z-index: 2;
+}
+
+	#search input {
+		width: 100%;
+		color: #999999;
+		border: 1px solid #999999;
+		margin: 1%;
+		padding: 1%;
+	}
+
 .notification {
 	background: #DEDEDE none repeat scroll 0 0;
 	margin: 0.2% 0;
@@ -29,6 +45,10 @@ a .badge {
 
 .icon-xl {
 	font-size: 125%;
+}
+
+.icon-xxl {
+	font-size: 300%;
 }
 
 .icon-link {
