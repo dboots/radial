@@ -26,7 +26,6 @@
 
 				Success: function(my_position) {
 					var d = $q.defer();
-
 					//--var user = UserService.User();
 
 					L.mapbox.accessToken = _mapboxToken;
@@ -34,7 +33,11 @@
 						'minZoom': 12,
 						'maxZoom': 15,
 						'zoomControl': false
-					}).setView([my_position.coords.latitude, my_position.coords.longitude], 12);
+					}).setView([my_position.coords.latitude, my_position.coords.longitude], 12)
+					.addControl(L.mapbox.geocoderControl('mapbox.places', {
+						proximity: true,
+						autocomplete: true
+					}));
 
 					//--MapService.PlotEvents(user.events);
 
