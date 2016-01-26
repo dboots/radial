@@ -29,15 +29,29 @@
 					//--var user = UserService.User();
 
 					L.mapbox.accessToken = _mapboxToken;
+
+					
+
 					_map = L.mapbox.map(_mapElement, _mapId, {
 						'minZoom': 12,
 						'maxZoom': 15,
 						'zoomControl': false
-					}).setView([my_position.coords.latitude, my_position.coords.longitude], 12)
-					.addControl(L.mapbox.geocoderControl('mapbox.places', {
+					}).setView([my_position.coords.latitude, my_position.coords.longitude], 12);
+					
+
+					var _geocoder = L.mapbox.geocoderControl('mapbox.places', {
 						proximity: true,
 						autocomplete: true
-					}));
+					}).addTo(_map);
+
+					_geocoder.on('select', function(f) {
+						console.log(f);
+						console.log(f.target._map);
+						console.log(f.feature.geometry.coordinates);
+						console.log(_map);
+						var coord = f.feature.geometry.coordinates;
+						L.marker([coord[1], coord[0]]).addTo(_map);
+					});
 
 					//--MapService.PlotEvents(user.events);
 
