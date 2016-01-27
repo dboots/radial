@@ -7,7 +7,7 @@
 			<i ng-click="approve(follower.user._id, false)" class="icon ion-close-circled"></i>
 			</span>
 
-			<span ng-show="follower.accepted == false && follower.response != ''">declined</span>
+			<span ng-show="follower.accepted == false && follower.date">declined {{follower.date}}</span>
 		</div>
 	</ion-content>
 </ion-view>

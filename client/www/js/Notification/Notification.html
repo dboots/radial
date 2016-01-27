@@ -1,0 +1,9 @@
+<ion-view view-title="Notifications" name="notifications-view">
+	<ion-content class="padding">
+		<strong>{{user.notifications.length}} new notifications</strong>
+		<div class="notification" ng-repeat="notification in user.notifications">
+			<a href="#/main/{{notification.link}}">{{notification.title}}</a>
+			<p class="subtitle">{{notification.date | date: 'medium'}}</p>
+		</div>
+	</ion-content>
+</ion-view>

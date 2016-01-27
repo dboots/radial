@@ -1,15 +1,22 @@
 (function () {
 	'use strict';
 
-	angular.module('app.controllers').controller('MapCtrl', function($scope, $ionicSideMenuDelegate, $ionicHistory, $global, $state, MapService, UserService, EventService) {
-		$scope.$on('$ionicView.enter', function(e){
-			//$ionicHistory.clearHistory();
-			console.log($ionicHistory.viewHistory());
-			$ionicSideMenuDelegate.canDragContent(false);
+	angular.module('app.controllers')
+		.controller('MapCtrl', function($scope, $ionicPopup, $ionicSideMenuDelegate, $ionicHistory, PlaceService, $global, $state, MapService, UserService, EventService) {
+			$scope.$on('$ionicView.enter', function(e){
+				$ionicSideMenuDelegate.canDragContent(false);
+			});
+
+			$scope.$on('$ionicView.leave', function(e){
+				$ionicSideMenuDelegate.canDragContent(true);
+			});
+
+			$scope.search = {};
+			$scope.init = false;
 
 			MapService.Map().then(function(data) {
 				MapService.PlotEvents(UserService.User());
-				//-- data.map.on('click', UserService.AddEvent);
+				$scope.init = true;
 				data.map.on('click', function(e) {
 					//-- Store map coords within EventService
 					EventService.Latlng(e.latlng);
@@ -17,9 +24,4 @@
 				});
 			});
 		});
-
-		$scope.$on('$ionicView.leave', function(e){
-			$ionicSideMenuDelegate.canDragContent(true);
-		});
-	});
 }());

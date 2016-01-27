@@ -5,7 +5,7 @@
 		</div>
 		<p>{{event.startDate}}</p>
 
-		<div ng-show="owner()">
+		<div ng-show="isOwner">
 			<button class="button button-block button-calm" ng-click="create()">Update Event</button>
 			<button class="button button-block button-assertive" ng-click="delete()">Delete Event</button>
 		</div>

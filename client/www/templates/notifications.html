@@ -1,9 +1,0 @@
-<ion-view view-title="Notifications" name="notifications-view">
-	<ion-content class="padding">
-		{{user.notifications.length}}
-		<div ng-repeat="notification in user.notifications">
-			{{notification.title}}{{notification.date}}
-			<i ng-click="decline" class="icon ion-close-circled"></i>
-		</div>
-	</ion-content>
-</ion-view>
