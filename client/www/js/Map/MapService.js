@@ -7,6 +7,7 @@
 			var _mapboxToken = 'pk.eyJ1IjoiZGJvb3RzIiwiYSI6ImNpZnNpMDBiaTE5eDByM2tyMHU0emluZTcifQ.Hl7P6OXhqxBkTqJ0J99eVA';
 			var _mapId = 'dboots.cifshzz181hx0s8m6kj4sjv7w';
 			var _mapElement = 'map';
+			var _placeMarker = {};
 
 			var MapService = {
 				Init: function() {
@@ -45,12 +46,9 @@
 					}).addTo(_map);
 
 					_geocoder.on('select', function(f) {
-						console.log(f);
-						console.log(f.target._map);
-						console.log(f.feature.geometry.coordinates);
-						console.log(_map);
+						_map.removeLayer(_placeMarker);
 						var coord = f.feature.geometry.coordinates;
-						L.marker([coord[1], coord[0]]).addTo(_map);
+						_placeMarker = L.marker([coord[1], coord[0]]).addTo(_map);
 					});
 
 					//--MapService.PlotEvents(user.events);
