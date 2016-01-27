@@ -46,8 +46,9 @@
 					}).addTo(_map);
 
 					_geocoder.on('select', function(f) {
-						_map.removeLayer(_placeMarker);
 						var coord = f.feature.geometry.coordinates;
+						
+						_map.removeLayer(_placeMarker);
 						_placeMarker = L.marker([coord[1], coord[0]]).addTo(_map);
 					});
 
