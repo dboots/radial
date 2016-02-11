@@ -3,6 +3,7 @@
 
 var User = require('../../models/User');
 var Event = require('../../models/Event');
+var Comments = require('../../models/Comment');
 
 module.exports = function(router, io) {
 	router.route('/users/:user_id/event')
@@ -35,6 +36,36 @@ module.exports = function(router, io) {
 					message: 'Event added'
 				});
 
+			});
+		} //-- end .put()
+	);//-- end /users/:user_id/event route
+
+	router.route('/event/:event_id/comments')
+		.get(function(req, res) {
+			var eventId = req.params.event_id;
+
+			Comments.find({event: eventId}, function(err, comments) {
+				res.status(200).json({
+					comments: comments,
+					success: true
+				});
+			});
+		})
+
+		.post(function(req, res) {
+			var comment = new Comments();
+
+			comment.body = req.body.body;
+			comment.user = req.body.userId;
+			comment.event = req.params.event_id;
+
+			comment.save(function(err) {
+				if (err) console.log(err);
+
+				res.status(200).json({
+					comment: comment,
+					success: true
+				});
 			});
 		}
 	);

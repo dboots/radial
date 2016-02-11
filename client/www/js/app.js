@@ -1,7 +1,7 @@
 (function () {
 	'use strict';
 
-	angular.module('starter', ['ionic', 'app.controllers', 'app.services'])
+	angular.module('starter', ['ionic', 'app.controllers', 'app.services', 'app.directives'])
 
 	.run(function($ionicPlatform, $global, UserService, $state) {
 		$ionicPlatform.ready(function() {

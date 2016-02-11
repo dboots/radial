@@ -90,10 +90,16 @@
 			};
 		}) //-- end RegisterCtrl
 
-		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService) {
+		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService, CommentService) {
+			var eventId, user;
+
 			$scope.$on('$ionicView.enter', function(e){
-				var eventId = $stateParams.id;
-				var user = UserService.User();
+				eventId = $stateParams.id;
+				user = UserService.User();
+
+				CommentService.Comments(eventId).then(function(d) {
+					$scope.comments = d.comments;
+				});
 
 				$scope.event = EventService.Event(eventId, user);
 				$scope.isOwner = EventService.isOwner(eventId, user);
@@ -102,6 +108,12 @@
 				console.log('[EventDetailCtrl] Event: ', eventId);
 				console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
 			});
+
+			$scope.comment = function(my_comment) {
+				CommentService.Add(eventId, my_comment, user._id).then(function(data) {
+					$scope.comments.push(data.comment);
+				});
+			};
 		})
 
 		.controller('EventCtrl', function($state, $stateParams, $scope, EventService, UserService) {
