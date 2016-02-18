@@ -103,6 +103,7 @@
 
 				$scope.event = EventService.Event(eventId, user);
 				$scope.isOwner = EventService.isOwner(eventId, user);
+				$scope.user = user;
 
 				console.log('[EventDetailCtrl] User: ', user);
 				console.log('[EventDetailCtrl] Event: ', eventId);
@@ -135,6 +136,11 @@
 				};
 
 				UserService.AddEvent(newEvent).then(function(data) {
+					var user = UserService.User();
+					user.events.push(data.data.data);
+
+					console.log(user);
+
 					$state.go('main.map');
 				});
 			};

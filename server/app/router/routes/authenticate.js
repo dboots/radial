@@ -25,7 +25,9 @@ module.exports = function(router, io, config) {
 				res.json({success: false, message: 'Auth failed. User not found.'});
 			} else if (user) {
 				io.channels = [];
-				io.channels.push('user-' + user._id);
+
+				//-- Join own channel. Disabled 2/18/16 in favor of client updating own local cache
+				//-- io.channels.push('user-' + user._id);
 
 				//-- Join user's following channels
 				_.each(user.following, function(i) {

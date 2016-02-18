@@ -44,12 +44,19 @@ module.exports = function(router, io) {
 		.get(function(req, res) {
 			var eventId = req.params.event_id;
 
-			Comments.find({event: eventId}, function(err, comments) {
-				res.status(200).json({
-					comments: comments,
-					success: true
+			Comments
+				.find({event: eventId})
+				.populate({
+					path: 'user',
+					select: '_id fname lname'
+				})
+				.exec(function(err, comments) {
+					console.log('[app/router/routes/event.js] comments: ', comments);
+					res.status(200).json({
+						comments: comments,
+						success: true
+					});
 				});
-			});
 		})
 
 		.post(function(req, res) {
@@ -62,9 +69,15 @@ module.exports = function(router, io) {
 			comment.save(function(err) {
 				if (err) console.log(err);
 
-				res.status(200).json({
-					comment: comment,
-					success: true
+				comment.populate({
+					path: 'user',
+					select: '_id fname lname'
+				}, function(err, comment) {
+					console.log('[app/router/routes/event.js] comment: ', comment);
+					res.status(200).json({
+						comment: comment,
+						success: true
+					});
 				});
 			});
 		}

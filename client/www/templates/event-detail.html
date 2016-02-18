@@ -1,14 +1,15 @@
 <ion-view view-title="Event Detail" name="eventDetail-view">
 	<ion-content class="padding">
 		<h2>{{event.title}}</h2>
+		<p>by {{user.fname}} {{user.lname}}</p>
 		<p><span class="title">When:</span> {{event.startDate}}</p>
 		<p>{{event.description}}</p>
 
 		<h2>Comments</h2>
 
 		<div ng-repeat="comment in comments">
+			<p class="subtitle">{{comment.user.fname}} {{comment.user.lname}} on {{comment.date | date: 'medium'}}</p>
 			{{comment.body}}
-			{{comment.date}}
 		</div>
 
 		<input type="text" placeholder="Leave a comment..." ng-model="data.comment">

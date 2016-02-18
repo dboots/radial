@@ -8,6 +8,7 @@
 			var _mapId = 'dboots.cifshzz181hx0s8m6kj4sjv7w';
 			var _mapElement = 'map';
 			var _placeMarker = {};
+			var _plottedEvents = [];
 
 			var MapService = {
 				Init: function() {
@@ -68,9 +69,12 @@
 
 					//-- Plot User's own events
 					for(var i = 0, len = userEvents.length; i < len; i++) {
-						latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
-						MapService.Circle(latLng, '#00FF00', userEvents[i]);
-						MapService.Marker(latLng, userEvents[i]);
+						if (_plottedEvents.indexOf(userEvents[i]._id) == -1) {
+							latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
+							MapService.Circle(latLng, '#00FF00', userEvents[i]);
+							MapService.Marker(latLng, userEvents[i]);
+							_plottedEvents.push(userEvents[i]._id);
+						}
 					}
 
 					//-- Plot User's Following events
