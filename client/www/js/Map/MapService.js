@@ -13,6 +13,7 @@
 			var MapService = {
 				Init: function() {
 					var d = $q.defer();
+					_plottedEvents = [];
 
 					var options = {timeout: 100000, enableHighAccuracy: true};
 					$cordovaGeolocation.getCurrentPosition(options)
@@ -66,6 +67,8 @@
 					var userEvents = my_user.events;
 					var userFollowing = my_user.following;
 					var latLng = {};
+
+					console.log(_plottedEvents);
 
 					//-- Plot User's own events
 					for(var i = 0, len = userEvents.length; i < len; i++) {
@@ -187,11 +190,15 @@
 						MapService.Init().then(function(data) {
 							_map = data.map;
 
+							console.log('[MapService.js] if _map', _map);
+
 							d.resolve({
 								map: _map
 							});
 						});
 					} else {
+						console.log('[MapService.js] else _map', _map);
+
 						d.resolve({
 							map: _map
 						});
