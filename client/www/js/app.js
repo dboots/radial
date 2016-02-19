@@ -5,8 +5,11 @@
 
 	.run(function($ionicPlatform, $global, UserService, $state) {
 		$ionicPlatform.ready(function() {
-			if (UserService.User() === undefined)
+			console.log('[app.js] UserService.User()', UserService.User());
+			if (typeof UserService.User() == 'undefined') {
+				console.log('[app.js] redirecting to login');
 				$state.go('login');
+			}
 
 			// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
 			if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
