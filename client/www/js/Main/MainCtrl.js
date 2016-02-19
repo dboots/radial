@@ -10,51 +10,62 @@
 				$scope.searchResults = [];
 				$scope.notificationCount = 0;
 
-				//-- Tally unread notification count
-				angular.forEach(user.notifications, function(i, v) {
-					if (!i.read)
-						$scope.notificationCount++;
-				});
+				/*
+				* BUG: When refreshing the app from the web on any page other than Login, the MainCtrl is being executed before
+				* redirecting to Login (due to properly undefined UserService.User()) resulting in errors from user not being 
+				* defined therefore encountering an error when trying to process user.notifications.
+				*/
+				
+				if (user) {
+					//-- Tally unread notification count
+					angular.forEach(user.notifications, function(i, v) {
+						if (!i.read)
+							$scope.notificationCount++;
+					});
 
-				$scope.user = user;
+					$scope.user = user;
+				}
 			});
 
 			var searchTimeout = true;
 
-			$global.socket().on('follow_approval', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request approved!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
+				//-- BUG: Related to the bug above, $global.socket() is also not defined and results in js errors
+				if ($global.socket()) {
+				$global.socket().on('follow_approval', function(my_data) {
+					$ionicPopup.show({
+						title: '!!',
+						template: 'Follow request approved!',
+						buttons: [
+							{ text: 'Ok' }
+						]
+					}); //-- end $ionicPopup()
 
-				$scope.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.following.push(my_data.following);
-			});
+					$scope.notificationCount++;
+					$scope.user.notifications.push(my_data.notification);
+					$scope.user.following.push(my_data.following);
+				});
 
-			$global.socket().on('follow_request', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
+				$global.socket().on('follow_request', function(my_data) {
+					$ionicPopup.show({
+						title: '!!',
+						template: 'Follow request!',
+						buttons: [
+							{ text: 'Ok' }
+						]
+					}); //-- end $ionicPopup()
 
-				$scope.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.following.push(my_data.follower);
-			});
+					$scope.notificationCount++;
+					$scope.user.notifications.push(my_data.notification);
+					$scope.user.following.push(my_data.follower);
+				});
 
-			$global.socket().on('add_event', function(my_event) {
-				console.log('[MainCtrl add_event]', my_event);
-				var latLng = L.latLng(my_event.latitude, my_event.longitude);
-				MapService.Circle(latLng, '#0000FF', my_event);
-				//-- TODO: Add notification to Followers. Maybe.
-			});
+				$global.socket().on('add_event', function(my_event) {
+					console.log('[MainCtrl add_event]', my_event);
+					var latLng = L.latLng(my_event.latitude, my_event.longitude);
+					MapService.Circle(latLng, '#0000FF', my_event);
+					//-- TODO: Add notification to Followers. Maybe.
+				});
+			} //-- end $global.socket() check
 
 			$scope.follow = function(my_followUserId) {
 				UserService.Follow(my_followUserId).then(function(data) {
