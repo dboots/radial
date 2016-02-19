@@ -91,23 +91,33 @@
 		}) //-- end RegisterCtrl
 
 		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService, CommentService) {
-			var eventId, user;
+			var eventId, user, isOwner;
 
 			$scope.$on('$ionicView.enter', function(e){
 				eventId = $stateParams.id;
 				user = UserService.User();
 
-				CommentService.Comments(eventId).then(function(d) {
-					$scope.comments = d.comments;
-				});
+				//-- BUG: Related to the bug found in Main/MainCtrl.js, we need to check for a valid User.
 
-				$scope.event = EventService.Event(eventId, user);
-				$scope.isOwner = EventService.isOwner(eventId, user);
-				$scope.user = user;
+				if (user) {
+					CommentService.Comments(eventId).then(function(d) {
+						$scope.comments = d.comments;
+					});
 
-				console.log('[EventDetailCtrl] User: ', user);
-				console.log('[EventDetailCtrl] Event: ', eventId);
-				console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
+					isOwner = EventService.isOwner(eventId, user);
+					$scope.isOwner = isOwner;
+					$scope.user = user;
+
+					if (isOwner) {
+						$scope.event = EventService.Event(eventId, user);
+					} else {
+						$scope.event = EventService.FollowerEvent(eventId, user.followers);
+					}
+
+					console.log('[EventDetailCtrl] User: ', user);
+					console.log('[EventDetailCtrl] Event: ', eventId);
+					console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
+				}
 			});
 
 			$scope.comment = function(my_comment) {
