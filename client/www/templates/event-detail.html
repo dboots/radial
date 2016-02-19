@@ -1,7 +1,7 @@
 <ion-view view-title="Event Detail" name="eventDetail-view">
 	<ion-content class="padding">
 		<h2>{{event.title}}</h2>
-		<p>by {{user.fname}} {{user.lname}}</p>
+		<p>by {{event.user.name}}</p>
 		<p><span class="title">When:</span> {{event.startDate}}</p>
 		<p>{{event.description}}</p>
 
@@ -16,7 +16,6 @@
 		<button type="button" class="button button-block button-calm" ng-click="comment(data.comment)">Submit</button>
 
 		<div ng-show="isOwner">
-			<button class="button button-block button-calm" ng-click="create()">Update Event</button>
 			<button class="button button-block button-assertive" ng-click="delete()">Delete Event</button>
 		</div>
 	</ion-content>
