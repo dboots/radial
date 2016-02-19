@@ -67,28 +67,46 @@
 					var userEvents = my_user.events;
 					var userFollowing = my_user.following;
 					var latLng = {};
+					var evt = {};
 
-					console.log(_plottedEvents);
+					console.log('[MapService.js:PlotEvents]', _plottedEvents);
 
 					//-- Plot User's own events
 					for(var i = 0, len = userEvents.length; i < len; i++) {
 						if (_plottedEvents.indexOf(userEvents[i]._id) == -1) {
-							latLng = L.latLng(userEvents[i].latitude, userEvents[i].longitude);
-							MapService.Circle(latLng, '#00FF00', userEvents[i]);
-							MapService.Marker(latLng, userEvents[i]);
-							_plottedEvents.push(userEvents[i]._id);
+							//-- Current event
+							evt = userEvents[i];
+
+							//-- Get position of event
+							latLng = L.latLng(evt.latitude, evt.longitude);
+
+							//-- Create circle on map
+							MapService.Circle(latLng, '#00FF00', evt);
+
+							//-- Add sticker to event
+							MapService.Marker(latLng, evt);
+
+							//-- Add event to plotted events cache to prevent from being plotted again
+							_plottedEvents.push(evt._id);
 						}
 					}
 
 					//-- Plot User's Following events
 					for(var j = 0, userLen = userFollowing.length; j < userLen; j++) {
+						//-- If Following user doesn't have any events, init to empty array
 						var followingUserEvents = (userFollowing[j].user !== null) ? userFollowing[j].user.events : [];
 
 						for(var k = 0, eventsLen = followingUserEvents.length; k < eventsLen; k++) {
-							var evt = followingUserEvents[k];
+							//-- Current Follower event
+							evt = followingUserEvents[k];
+
+							//-- Get position of Follower event
 							latLng = L.latLng(evt.latitude, evt.longitude);
 
+							//-- Create circle on map
 							MapService.Circle(latLng, '#FF0000', evt);
+
+							//-- Add sticker to Follower event
 							MapService.Marker(latLng, evt);
 						}
 					}
@@ -145,6 +163,7 @@
 						circleOpts.color = my_color;
 						circleOpts.opacity = 0.8;
 					} else {
+						//-- Default: full opacity
 						circleOpts.color = my_color;
 						circleOpts.opacity = 1;
 					}
