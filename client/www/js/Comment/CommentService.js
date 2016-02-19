@@ -3,15 +3,14 @@
 
 	angular.module('app.controllers')
 		.service('CommentService', function($http, $global, $q) {
-			var _comments = {};
+			var _commentCache = {};
 
 			var CommentService = {
 				Comments: function(my_eventId) {
 					var d = $q.defer();
 
-					if (my_eventId in _comments) {
-						d.resolve(_comments[my_eventId]);
-						console.log('[CommentService] Comments from cache: ', _comments);
+					if (my_eventId in _commentCache) {
+						d.resolve(_commentCache[my_eventId]);
 					} else {
 
 						$http.get($global.config('api') + '/event/' + my_eventId + '/comments', {
@@ -19,8 +18,7 @@
 								token: window.localStorage['token']
 							}
 						}).then(function(data) {
-							_comments[my_eventId] = data.data;
-							console.log('[CommentService] Comments from db: ', _comments);
+							_commentCache[my_eventId] = data.data;
 							d.resolve(data.data);
 						});
 					}
