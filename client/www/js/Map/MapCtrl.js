@@ -6,15 +6,19 @@
 			$scope.$on('$ionicView.enter', function(e){
 				$ionicSideMenuDelegate.canDragContent(false);
 
-				MapService.Map().then(function(data) {
-					MapService.PlotEvents(UserService.User());
+				//-- BUG: Related to the bug found in Main/MainCtrl.js, we need to check for a valid User.
+				//-- Without this check, MapCtrl could attempt to PlotEvents without a valid User.Events collection
+				if (UserService.User()) {
+					MapService.Map().then(function(data) {
+						MapService.PlotEvents(UserService.User());
 
-					data.map.on('click', function(e) {
-						//-- Store map coords within EventService
-						EventService.Latlng(e.latlng);
-						$state.go('main.eventAdd');
+						data.map.on('click', function(e) {
+							//-- Store map coords within EventService
+							EventService.Latlng(e.latlng);
+							$state.go('main.eventAdd');
+						});
 					});
-				});
+				}
 			});
 
 			$scope.$on('$ionicView.leave', function(e){
