@@ -4,9 +4,7 @@
 	angular.module('app.controllers')
 		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {
 			$scope.$on('$ionicView.enter', function() {
-				$scope.data = [];
-				$scope.data.email = 'fool@fool.com';
-				$scope.data.password = 'foolpass';
+				
 
 				UserService.logout();
 				MapService.Remove();
@@ -22,7 +20,12 @@
 				}); //-- end $ionicPopup()
 			});
 
+			$scope.data = [];
+			$scope.data.email = 'fool@fool.com';
+			$scope.data.password = 'foolpass';
+
 			$scope.login = function() {
+				console.log('[LoginCtrl.js] Attempting to login with ' + $scope.data.email + ' and ' + $scope.data.password);
 				LoginService.loginUser($scope.data.email, $scope.data.password)
 					.then(function(data) {
 						if (data.data.success) {
