@@ -29,7 +29,7 @@
 		.controller('ResumeCtrl', function($scope, UserService, $state, SocketService) {
 			$scope.$on('$ionicView.enter', function(e) {
 				console.log('[ResumeCtrl.js]', UserService.Token());
-				if (UserService.Token() === null) {
+				if (UserService.Token() == 'null') {
 					$state.go('login');
 				} else {
 					UserService.Refresh()

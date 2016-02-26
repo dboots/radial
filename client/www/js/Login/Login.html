@@ -12,5 +12,11 @@
 			<button class="button button-block button-calm" ng-disabled="!loginForm.$valid" ng-click="login()">Login</button>
 			<button class="button button-block button-calm" ng-click="register()">Register</button>
 		</form>
+
+		<div class="debug">
+			<strong>Server:</strong> {{server}}<br />
+			<strong>Platform:</strong> {{currentPlatform}}<br />
+			<strong>Token:</strong> {{token}}<br />
+		</div>
 	</ion-content>
 </ion-view>

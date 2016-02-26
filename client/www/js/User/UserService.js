@@ -13,15 +13,14 @@
 						UserService.Token(data.data.token);
 						UserService.User(data.data.user);
 
-						window.localStorage['uid'] = data.data.user._id;
+						localStorage.setItem('uid', data.data.user._id);
 						console.log('[UserService:login]', _user);
 					}
-
-					return window.localStorage['token'];
 				},
 
 				logout: function() {
-					window.localStorage['token'] = null;
+					localStorage.setItem('token', null);
+					_token = null;
 					_user = null;
 
 					if ($global.socket()) {
@@ -33,9 +32,9 @@
 				Refresh: function() {
 					if (_token !== 'null') {
 						console.log('[UserService:Refresh] refreshing user...', _token);
-						console.log('[UserService:Refresh] uid: ', window.localStorage['uid']);
+						console.log('[UserService:Refresh] uid: ', localStorage.getItem('uid'));
 						return $http.post($global.config('api') + '/users/refresh/', {
-							uid: window.localStorage['uid'],
+							uid: localStorage.getItem('uid'),
 							token: _token
 						});
 					}
@@ -44,13 +43,15 @@
 				Token: function(my_token) {
 					if (my_token) {
 						console.log('[UserService:Token] Setting token to localStorage.', my_token);
-						window.localStorage['token'] = my_token;
+						localStorage.setItem('token', my_token);
 						_token = my_token;
 					}
 
-					if (_token === undefined) {
-						_token = window.localStorage['token'];
+					if (_token === null) {
+						_token = localStorage.getItem('token');
 					}
+
+					console.log('[UserService:Token()] returning _token: ', _token);
 
 					return _token;
 				},
@@ -69,7 +70,7 @@
 				Follow: function(my_followUserId) {
 					return $http.post($global.config('api') + '/users/follow/' + _user._id, {
 						followUserId: my_followUserId,
-						token: window.localStorage['token']
+						token: _token
 					});
 				},
 
@@ -77,7 +78,7 @@
 					return $http.put($global.config('api') + '/users/follow/' + _user._id, {
 						followUserId: my_followUserId,
 						accepted: my_approval,
-						token: window.localStorage['token']
+						token: _token
 					});
 				},
 
@@ -89,7 +90,7 @@
 							user: my_user,
 							oldPassword: my_oldPassword,
 							newPassword: my_newPassword,
-							token: window.localStorage['token']
+							token: _token
 						});
 					}
 				},
@@ -98,7 +99,7 @@
 					if (my_event) {
 						return $http.put($global.config('api') + '/users/' + _user._id + '/event', {
 							eventObj: my_event,
-							token: window.localStorage['token'],
+							token: _token
 						});
 					}
 				},

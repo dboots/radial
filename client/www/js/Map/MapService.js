@@ -199,7 +199,7 @@
 						]
 					}); //-- end $ionicPopup()
 
-					MapService.Init();
+					//-- MapService.Init();
 				},
 
 				Map: function(my_map) {

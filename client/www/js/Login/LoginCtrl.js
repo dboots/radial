@@ -9,15 +9,9 @@
 				UserService.logout();
 				MapService.Remove();
 
-				var currentPlatform = ionic.Platform.platform();
-
-				$ionicPopup.show({
-					title: 'Debug',
-					template: 'Platform: ' + currentPlatform + '<br />Using ' + $global.config('server') + ' to connect.',
-					buttons: [
-						{ text: 'Thank you debug fairy!' }
-					]
-				}); //-- end $ionicPopup()
+				$scope.currentPlatform = ionic.Platform.platform();
+				$scope.server = $global.config('server');
+				$scope.token = UserService.Token();
 			});
 
 			$scope.data = [];
