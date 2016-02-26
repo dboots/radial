@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.controller('MainCtrl', function($scope, SearchService, MapService, UserService, $timeout, $ionicPopup, $global) {
+		.controller('MainCtrl', function($scope, $state, SearchService, MapService, UserService, SocketService, $timeout, $ionicPopup, $global) {
 			$scope.$on('$ionicView.enter', function(viewEvent) {
 				var user = UserService.User();
 
@@ -11,50 +11,54 @@
 				$scope.notificationCount = 0;
 
 				//-- Tally unread notification count
-				angular.forEach(user.notifications, function(i, v) {
-					if (!i.read)
-						$scope.notificationCount++;
-				});
+				if (user) {
+					angular.forEach(user.notifications, function(i, v) {
+						if (!i.read)
+							$scope.notificationCount++;
+					});
+				}
 
 				$scope.user = user;
 			});
 
 			var searchTimeout = true;
 
-			$global.socket().on('follow_approval', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request approved!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
+			if ($global.socket()) {
+				$global.socket().on('follow_approval', function(my_data) {
+					$ionicPopup.show({
+						title: '!!',
+						template: 'Follow request approved!',
+						buttons: [
+							{ text: 'Ok' }
+						]
+					}); //-- end $ionicPopup()
 
-				$scope.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.following.push(my_data.following);
-			});
+					$scope.notificationCount++;
+					$scope.user.notifications.push(my_data.notification);
+					$scope.user.following.push(my_data.following);
+				});
 
-			$global.socket().on('follow_request', function(my_data) {
-				$ionicPopup.show({
-					title: '!!',
-					template: 'Follow request!',
-					buttons: [
-						{ text: 'Ok' }
-					]
-				}); //-- end $ionicPopup()
+				$global.socket().on('follow_request', function(my_data) {
+					$ionicPopup.show({
+						title: '!!',
+						template: 'Follow request!',
+						buttons: [
+							{ text: 'Ok' }
+						]
+					}); //-- end $ionicPopup()
 
-				$scope.notificationCount++;
-				$scope.user.notifications.push(my_data.notification);
-				$scope.user.following.push(my_data.follower);
-			});
+					$scope.notificationCount++;
+					$scope.user.notifications.push(my_data.notification);
+					$scope.user.following.push(my_data.follower);
+				});
 
-			$global.socket().on('add_event', function(my_event) {
-				console.log('[MainCtrl add_event]', my_event);
-				var latLng = L.latLng(my_event.latitude, my_event.longitude);
-				MapService.Circle(latLng, '#0000FF', my_event);
-				//-- TODO: Add notification to Followers. Maybe.
-			});
+				$global.socket().on('add_event', function(my_event) {
+					console.log('[MainCtrl add_event]', my_event);
+					var latLng = L.latLng(my_event.latitude, my_event.longitude);
+					MapService.Circle(latLng, '#0000FF', my_event);
+					//-- TODO: Add notification to Followers. Maybe.
+				});
+			}
 
 			$scope.follow = function(my_followUserId) {
 				UserService.Follow(my_followUserId).then(function(data) {

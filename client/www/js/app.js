@@ -3,10 +3,8 @@
 
 	angular.module('starter', ['ionic', 'app.controllers', 'app.services'])
 
-	.run(function($ionicPlatform, $global, UserService, $state) {
+	.run(function($ionicPlatform, $global, $state) {
 		$ionicPlatform.ready(function() {
-			if (UserService.User() === undefined)
-				$state.go('login');
 
 			// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
 			if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {

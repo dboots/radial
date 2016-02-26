@@ -176,22 +176,25 @@
 					MapService.Init();
 				},
 
-				Map: function() {
+				Map: function(my_map) {
+					if (my_map)
+						_map = my_map;
+
+					return _map;
+				},
+
+				InitMap: function() {
+					console.log('[MapService:Map] _map: ', _map);
 					var d = $q.defer();
 
-					if (!_map) {
-						MapService.Init().then(function(data) {
-							_map = data.map;
+					MapService.Init().then(function(data) {
+						_map = data.map;
 
-							d.resolve({
-								map: _map
-							});
-						});
-					} else {
 						d.resolve({
 							map: _map
 						});
-					}
+					});
+
 
 					return d.promise;
 				},

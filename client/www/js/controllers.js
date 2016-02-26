@@ -26,6 +26,23 @@
 				});
 			}
 			*/
+		.controller('ResumeCtrl', function($scope, UserService, $state, SocketService) {
+			$scope.$on('$ionicView.enter', function(e) {
+				console.log('[ResumeCtrl.js]', UserService.Token());
+				if (UserService.Token() == 'null') {
+					$state.go('login');
+				} else {
+					UserService.Refresh()
+						.then(function(data) {
+							console.log('[MainCtrl.js:UserService.Refresh.then()] data: ', data);
+							UserService.User(data.data.user);
+							SocketService.connect(data);
+							$state.go('main.map');
+						}
+					);
+				}
+			});
+		})
 
 		.controller('FollowersCtrl', function($scope, UserService) {
 			var user = {};

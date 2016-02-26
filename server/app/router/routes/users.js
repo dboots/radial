@@ -35,6 +35,41 @@ module.exports = function(router) {
 		}
 	);
 
+	router.route('/users/refresh')
+		.post(function(req, res) {
+			console.log('[app/router/routes/users.js] Refresh route is go!');
+			var uid = req.body.uid;
+			var token = req.body.token;
+
+			console.log('uid: ', uid);
+			console.log('token: ', token);
+
+			if (token) {
+				User.findOne({'_id': uid}).populate({
+					path: 'followers.user',
+					select: '_id fname lname events accepted'
+				}).populate({
+					path: 'following.user',
+					select: '_id fname lname events accepted'
+				}).populate({
+					path: 'following.userId.events'
+				}).exec(function(err, user) {
+					if (err) console.log(err);
+
+					res.json({
+						success: true,
+						token: token,
+						user: user
+					});
+				});
+			} else {
+				res.json({
+					success: false
+				});
+			}
+		}
+	);
+
 	router.route('/users/:user_id')
 		.put(function(req, res) {
 			User.findOne({_id: new ObjectId(req.params.user_id)}).populate('following.user').exec(function(err, user) {

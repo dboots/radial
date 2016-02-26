@@ -1,6 +1,8 @@
 (function () {
 	'use strict';
 
+	console.log('[routes.js]');
+
 	angular.module('starter')
 		.config(function($stateProvider, $urlRouterProvider) {
 			$stateProvider
@@ -95,9 +97,13 @@
 							}
 						}
 					}
-				);
+				)
+				.state('resume', {
+					url: '/resume',
+					controller: 'ResumeCtrl'
+				});
 
 			// if none of the above states are matched, use this as the fallback
-			$urlRouterProvider.otherwise('/login');
+			$urlRouterProvider.otherwise('/resume');
 		});
 }());

@@ -5,6 +5,7 @@
 		.factory('SocketService', function($global, $q) {
 			return {
 				connect: function(my_data) {
+					console.log('[SocketService:connect] my_data: ', my_data);
 					var d = $q.defer();
 
 					//-- io is referenced from socket.io.js file in index.html

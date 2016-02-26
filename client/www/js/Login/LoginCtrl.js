@@ -3,11 +3,9 @@
 
 	angular.module('app.controllers')
 		.controller('LoginCtrl', function($scope, LoginService, $state, $ionicPopup, $ionicHistory, $global, UserService, SocketService, MapService) {
+			$scope.data = [];
+			
 			$scope.$on('$ionicView.enter', function() {
-				$scope.data = [];
-				$scope.data.email = 'fool';
-				$scope.data.password = 'fool';
-
 				UserService.logout();
 				MapService.Remove();
 

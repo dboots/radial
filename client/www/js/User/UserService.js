@@ -4,13 +4,16 @@
 	angular.module('app.controllers')
 		.factory('UserService', function($global, $http) {
 			var _user;
+			var _token;
 
 			var UserService = {
 				login: function(data) {
 					if (data) {
-						window.localStorage['token'] = data.data.token;
-						_user = data.data.user;
+						console.log('[UserService:login]', data);
+						UserService.Token(data.data.token);
+						UserService.User(data.data.user);
 
+						window.localStorage['uid'] = data.data.user._id;
 						console.log('[UserService:login]', _user);
 					}
 
@@ -27,9 +30,38 @@
 					}
 				},
 
+				Refresh: function() {
+					if (_token !== 'null') {
+						console.log('[UserService:Refresh] refreshing user...', _token);
+						console.log('[UserService:Refresh] uid: ', window.localStorage['uid']);
+						return $http.post($global.config('api') + '/users/refresh/', {
+							uid: window.localStorage['uid'],
+							token: _token
+						});
+					}
+				},
+
+				Token: function(my_token) {
+					if (my_token) {
+						console.log('[UserService:Token] Setting token to localStorage.', my_token);
+						window.localStorage['token'] = my_token;
+						_token = my_token;
+					}
+
+					if (_token === undefined) {
+						_token = window.localStorage['token'];
+					}
+
+					return _token;
+				},
+
 				User: function(my_user) {
-					if (my_user)
+					if (my_user) {
+						console.log('[UserService:User] my_user: ', my_user);
 						_user = my_user;
+					}
+
+					console.log('[UserService:User] returning:', _user);
 
 					return _user;
 				},
