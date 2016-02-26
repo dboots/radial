@@ -3,7 +3,7 @@
 
 	angular.module('app.services')
 		.factory('MapService', function($cordovaGeolocation, $state, $q, $ionicPopup) {
-			var _map;
+			var _map = null;
 			var _mapboxToken = 'pk.eyJ1IjoiZGJvb3RzIiwiYSI6ImNpZnNpMDBiaTE5eDByM2tyMHU0emluZTcifQ.Hl7P6OXhqxBkTqJ0J99eVA';
 			var _mapId = 'dboots.cifshzz181hx0s8m6kj4sjv7w';
 			var _mapElement = 'map';

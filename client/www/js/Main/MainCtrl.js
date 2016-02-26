@@ -9,6 +9,7 @@
 				$scope.query = [];
 				$scope.searchResults = [];
 				$scope.notificationCount = 0;
+				$scope.user = user;
 
 				//-- Tally unread notification count
 				if (user) {

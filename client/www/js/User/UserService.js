@@ -3,8 +3,8 @@
 
 	angular.module('app.controllers')
 		.factory('UserService', function($global, $http) {
-			var _user;
-			var _token;
+			var _user = null;
+			var _token = null;
 
 			var UserService = {
 				login: function(data) {

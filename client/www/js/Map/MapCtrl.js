@@ -6,10 +6,11 @@
 			$scope.$on('$ionicView.enter', function(e){
 				$ionicSideMenuDelegate.canDragContent(false);
 
-				if (UserService.User() === undefined) {
+				if (UserService.User() === null) {
 					$state.go('resume');
 				} else {
-					if (MapService.Map() === undefined) {
+					console.log('[MapCtrl.js] MapService.Map() ', MapService.Map());
+					if (MapService.Map() === null) {
 						MapService.InitMap().then(function(data) {
 							MapService.PlotEvents(UserService.User());
 							$scope.init = true;
