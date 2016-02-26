@@ -82,11 +82,13 @@
 				},
 
 				//-- TODO: Pull token from LocalStorage service
-				Update: function(my_user) {
+				Update: function(my_user, my_newPassword, my_oldPassword) {
 					if (my_user) {
 						var user_id = my_user._id;
 						return $http.put($global.config('api') + '/users/' + user_id, {
 							user: my_user,
+							oldPassword: my_oldPassword,
+							newPassword: my_newPassword,
 							token: window.localStorage['token']
 						});
 					}

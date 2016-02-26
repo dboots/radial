@@ -3,15 +3,19 @@
 
 	angular.module('app.controllers')
 		.controller('SettingsCtrl', function($scope, UserService, $ionicPopup, $ionicHistory) {
+			$scope.data = {};
+
 			$scope.$on('$ionicView.enter', function() {
 				$scope.user = UserService.User();
 			});
 
 			$scope.save = function() {
-				UserService.Update($scope.user).then(function(data) {
+				UserService.Update($scope.user, $scope.data.newPassword, $scope.data.oldPassword).then(function(data) {
+					$scope.data = {};
+					
 					$ionicPopup.show({
 						title: 'Message',
-						template: 'Your changes have been saved.',
+						template: data.data.message,
 						buttons: [
 							{ text: 'Continue' }
 						]

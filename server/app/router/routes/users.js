@@ -4,6 +4,7 @@
 var User = require('../../models/User');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var bcrypt = require('bcrypt');
 
 module.exports = function(router) {
 	//-- ***
@@ -73,21 +74,59 @@ module.exports = function(router) {
 	router.route('/users/:user_id')
 		.put(function(req, res) {
 			User.findOne({_id: new ObjectId(req.params.user_id)}).populate('following.user').exec(function(err, user) {
-				if (err)
-					console.log(err);
+				if (err) console.log(err);
 
 				var userData = req.body.user;
+				var newPassword = req.body.newPassword;
+				var oldPassword = req.body.oldPassword;
 
 				if (user) {
-					User.update({'_id': user._id}, {$set: userData}, function(err) {
-						if (err)
-							console.log(err);
+					/*
+					* If changing password, compare to existing password and if it is a match store
+					* new hash in updated User document.
+					*/
 
-						res.json({
-							success: true,
-							message: 'User updated'
+					if (newPassword) {
+						bcrypt.compare(oldPassword, user.password, function(err, match) {
+							console.log('[router/routes/users.js] match: ', match);
+							if (match) {
+								bcrypt.hash(newPassword, 10, function(err, hash) {
+									console.log('[router/routes/users.js] userData.password: ', userData.password);
+									userData.password = hash;
+									console.log('[router/routes/users.js] userData.password: ', userData.password);
+
+									User.update({'_id': user._id}, {$set: userData}, function(err) {
+										if (err) console.log(err);
+
+										console.log('[router/routes/users.js] User updated: ', userData);
+
+										res.json({
+											success: true,
+											message: 'User updated'
+										});
+									}); //-- end User.update()
+								});
+							} else {
+								console.log('[router/routes/users.js] no match');
+								return res.json({
+									success: true,
+									message: 'Invalid password'
+								});
+								
+							}
 						});
-					});
+					} else {
+						User.update({'_id': user._id}, {$set: userData}, function(err) {
+							if (err) console.log(err);
+
+							console.log('[router/routes/users.js] User updated: ', userData);
+
+							res.json({
+								success: true,
+								message: 'User updated'
+							});
+						}); //-- end User.update()
+					}
 				} else {
 					res.json({
 						success: false,

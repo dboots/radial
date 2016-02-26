@@ -7,6 +7,15 @@ p.subtitle {
 	margin: 0;
 }
 
+.follower-item {
+	font-size: 125%;
+	padding: 2% 0;
+}
+
+.follower-actions {
+	float: right;
+}
+
 #map {
 	z-index: 1;
 	position: relative;

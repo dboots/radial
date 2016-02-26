@@ -1,20 +1,28 @@
 <ion-view view-title="Event" name="event-view">
 	<ion-content class="padding">
-			<div class="list list-inset">
+			<form name="eventForm" novalidate>
+				<div class="list list-inset">
 					<label class="item item-input">
-						<input type="text" placeholder="What's going on?" ng-model="data.title">
+						<input type="text" placeholder="What's going on?" name="title" ng-model="data.title" required ng-minlength="4">
+						<span>{{eventForm.$valid}}</span>
+						<span>{{eventForm.title.$error}}</span>
 					</label>
+
 					<label class="item item-input">
 						<input type="date" ng-model="data.startDate">
 					</label>
+
 					<label class="item item-input">
 						<input type="date" ng-model="data.endDate">
 					</label>
+
 					<label class="item item-input">
 						<textarea placeholder="Any other details you'd like to add?" ng-model="data.description"></textarea>
 					</label>
-			</div>
-			<button class="button button-block button-calm" ng-click="create()">Create Event</button>
-			<button class="button button-block button-calm" ng-click="cancel()">Cancel</button>
+				</div>
+
+				<button class="button button-block button-calm" ng-disabled="!eventForm.$valid" ng-click="create()">Create Event</button>
+				<button class="button button-block button-calm" ng-click="cancel()">Cancel</button>
+			</form>
 	</ion-content>
 </ion-view>

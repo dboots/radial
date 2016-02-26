@@ -107,18 +107,41 @@
 			};
 		}) //-- end RegisterCtrl
 
-		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService) {
+		.controller('EventDetailCtrl', function($scope, $stateParams, UserService, EventService, CommentService) {
+			var eventId, user, isOwner;
+
 			$scope.$on('$ionicView.enter', function(e){
-				var eventId = $stateParams.id;
-				var user = UserService.User();
+				eventId = $stateParams.id;
+				user = UserService.User();
 
-				$scope.event = EventService.Event(eventId, user);
-				$scope.isOwner = EventService.isOwner(eventId, user);
+				//-- BUG: Related to the bug found in Main/MainCtrl.js, we need to check for a valid User.
 
-				console.log('[EventDetailCtrl] User: ', user);
-				console.log('[EventDetailCtrl] Event: ', eventId);
-				console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
+				if (user) {
+					CommentService.Comments(eventId).then(function(d) {
+						$scope.comments = d.comments;
+					});
+
+					isOwner = EventService.isOwner(eventId, user);
+					$scope.isOwner = isOwner;
+					$scope.user = user;
+
+					if (isOwner) {
+						$scope.event = EventService.Event(eventId, user);
+					} else {
+						$scope.event = EventService.FollowerEvent(eventId, user.followers);
+					}
+
+					console.log('[EventDetailCtrl] User: ', user);
+					console.log('[EventDetailCtrl] Event: ', eventId);
+					console.log('[EventDetailCtrl] EventService.Event(): ', $scope.event);
+				}
 			});
+
+			$scope.comment = function(my_comment) {
+				CommentService.Add(eventId, my_comment, user._id).then(function(data) {
+					$scope.comments.push(data.comment);
+				});
+			};
 		})
 
 		.controller('EventCtrl', function($state, $stateParams, $scope, EventService, UserService) {
@@ -140,6 +163,11 @@
 				};
 
 				UserService.AddEvent(newEvent).then(function(data) {
+					var user = UserService.User();
+					user.events.push(data.data.data);
+
+					console.log(user);
+
 					$state.go('main.map');
 				});
 			};

@@ -1,13 +1,19 @@
 <ion-view view-title="Followers" name="followers-view">
 	<ion-content class="padding">
-		<div ng-repeat="follower in user.followers">
-			{{follower.user.fname}} {{follower.user.lname}}
-			<span ng-show="follower.accepted == false">
-			<i ng-click="approve(follower.user._id, true)" class="icon ion-checkmark-circled"></i>
-			<i ng-click="approve(follower.user._id, false)" class="icon ion-close-circled"></i>
-			</span>
+		<div class="followers" ng-repeat="follower in user.followers">
+			<div class="follower-item">
+				{{follower.user.fname}} {{follower.user.lname}}
+				<span class="follower-actions" ng-show="follower.accepted == false">
+				<i ng-click="approve(follower.user._id, true)" class="icon icon-xl ion-checkmark-circled"></i>
+				<i ng-click="approve(follower.user._id, false)" class="icon icon-xl ion-close-circled"></i>
+				</span>
 
-			<span ng-show="follower.accepted == false && follower.date">declined {{follower.date}}</span>
+				<span ng-show="follower.accepted == false && follower.date">declined {{follower.date}}</span>
+
+				<div class="follower-events" ng-repeat="event in follower.events">
+					<div>{{event.title}}</div>
+				</div>
+			</div>
 		</div>
 	</ion-content>
 </ion-view>
