@@ -34,10 +34,16 @@
 				} else {
 					UserService.Refresh()
 						.then(function(data) {
-							console.log('[MainCtrl.js:UserService.Refresh.then()] data: ', data);
-							UserService.User(data.data.user);
-							SocketService.connect(data);
-							$state.go('main.map');
+							console.log('[ResumeCtrl.js] data: ', data.data.success);
+							if (data.data.success === false) {
+								console.log('[ResumeCtrl.js] refresh failed, returning to login');
+								$state.go('login');
+							} else {
+								console.log('[MainCtrl.js:UserService.Refresh.then()] data: ', data);
+								UserService.User(data.data.user);
+								SocketService.connect(data);
+								$state.go('main.map');
+							}
 						}
 					);
 				}
