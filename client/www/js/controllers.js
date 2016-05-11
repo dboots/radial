@@ -29,7 +29,7 @@
 		.controller('ResumeCtrl', function($scope, UserService, $state, SocketService) {
 			$scope.$on('$ionicView.enter', function(e) {
 				console.log('[ResumeCtrl.js]', UserService.Token());
-				if (UserService.Token() == 'null') {
+				if (UserService.Token() === null) {
 					$state.go('login');
 				} else {
 					UserService.Refresh()
@@ -118,6 +118,7 @@
 
 			$scope.$on('$ionicView.enter', function(e){
 				eventId = $stateParams.id;
+				service = $stateParams.service;
 				user = UserService.User();
 
 				//-- BUG: Related to the bug found in Main/MainCtrl.js, we need to check for a valid User.
