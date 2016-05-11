@@ -30,14 +30,12 @@
 				},
 
 				Refresh: function() {
-					if (_token !== 'null') {
-						console.log('[UserService:Refresh] refreshing user...', _token);
-						console.log('[UserService:Refresh] uid: ', localStorage.getItem('uid'));
-						return $http.post($global.config('api') + '/users/refresh/', {
-							uid: localStorage.getItem('uid'),
-							token: _token
-						});
-					}
+					console.log('[UserService:Refresh] refreshing user...', _token);
+					console.log('[UserService:Refresh] uid: ', localStorage.getItem('uid'));
+					return $http.post($global.config('api') + '/users/refresh/', {
+						uid: localStorage.getItem('uid'),
+						token: _token
+					});
 				},
 
 				Token: function(my_token) {
