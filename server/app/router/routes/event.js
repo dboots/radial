@@ -4,8 +4,21 @@
 var User = require('../../models/User');
 var Event = require('../../models/Event');
 var Comments = require('../../models/Comment');
+var EventCategory = require('../../models/EventCategory');
 
 module.exports = function(router, io) {
+	router.route('/event/categories')
+		.get(function(req ,res) {
+			EventCategory.find({}, function(err, cats) {
+				if (err) console.log(err);
+
+				res.status(200).json({
+					data: cats
+				});
+			});
+		} //-- end .get()
+	); //-- end /event/categories
+
 	router.route('/users/:user_id/event')
 		.put(function(req, res) {
 			User.findById(req.params.user_id, function(err, user) {
