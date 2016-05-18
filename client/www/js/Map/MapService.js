@@ -9,14 +9,16 @@
 			var _mapElement = 'map';
 			var _placeMarker = {};
 			var _plottedEvents = [];
+			var _location = {};
+			var _locationOptions = {timeout: 100000, enableHighAccuracy: true};
 
 			var MapService = {
 				Init: function() {
 					var d = $q.defer();
 					_plottedEvents = [];
 
-					var options = {timeout: 100000, enableHighAccuracy: true};
-					$cordovaGeolocation.getCurrentPosition(options)
+					
+					$cordovaGeolocation.getCurrentPosition(_locationOptions)
 						.then(this.Success, this.Error)
 						.then(function(data) {
 							d.resolve({
@@ -27,8 +29,27 @@
 					return d.promise;
 				},
 
+				Location: function() {
+					return _location;
+				},
+
+				GetLocation: function() {
+					var d = $q.defer();
+
+					$cordovaGeolocation.getCurrentPosition(_locationOptions)
+						.then(function(data) {
+							d.resolve({
+								data: data
+							});
+						});
+
+					return d.promise;
+				},
+
 				Success: function(my_position) {
 					var d = $q.defer();
+					_location = my_position;
+					console.log('[MapService:Success] setting _location: ', _location);
 					//--var user = UserService.User();
 
 					L.mapbox.accessToken = _mapboxToken;
@@ -61,6 +82,15 @@
 					});
 
 					return d.promise;
+				},
+
+				PlotEvent: function(my_event, my_service) {
+					var latLng = L.latLng(my_event.latitude, my_event.longitude);
+
+					console.log('[MapService:PlotEvent] Plotting event: ', my_event);
+
+					MapService.Circle(latLng, '#00FF00', my_event, my_service);
+					MapService.Marker(latLng, my_event);
 				},
 
 				PlotEvents: function(my_user) {
@@ -112,7 +142,10 @@
 					}
 				},
 
-				Circle: function(my_latLng, my_color, my_event) {
+				Circle: function(my_latLng, my_color, my_event, my_service) {
+					if (!my_service)
+						my_service = 'default';
+
 					//-- 1 mile = 1609.34 meters
 
 					//-- TODO: Testing different circle/marker styles to be used in conjunction
@@ -127,15 +160,16 @@
 						}).addTo(_map);
 
 						c.on('click', function(e) {
-							MapService.EventClick(my_event);
+							MapService.EventClick(my_event, my_service);
 						});
 					}
 				},
 
-				EventClick: function(my_event) {
+				EventClick: function(my_event, my_service) {
 					if (my_event._id) {
 						$state.go('main.event', {
-							'id': my_event._id
+							'id': my_event._id,
+							'service': my_service
 						});
 					}
 				},
