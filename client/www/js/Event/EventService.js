@@ -2,9 +2,10 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.service('EventService', function() {
+		.service('EventService', function($q, $http, $global) {
 			var _latlng;
 			var _events = [];
+			var _categories = [];
 			
 			var EventService = {
 				Events: function(my_user) {
@@ -12,6 +13,23 @@
 						_events = my_user['events'];
 
 					return _events;
+				},
+
+				Categories: function(my_token) {
+					var defer = $q.defer();
+
+					if (_categories.length)
+						defer.resolve(_categories);
+
+					$http.get($global.config('api') + '/event/categories/', {
+						params: {
+							token: my_token
+						}
+					}).then(function(data) {
+						defer.resolve(data.data);
+					});
+
+					return defer.promise;
 				},
 
 				/*

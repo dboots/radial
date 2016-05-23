@@ -2,9 +2,15 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.controller('MainCtrl', function($scope, $state, SearchService, MapService, UserService, SocketService, $timeout, $ionicPopup, $global) {
+		.controller('MainCtrl', function($scope, $state, SearchService, EventfulService, MapService, UserService, EventService, SocketService, $timeout, $ionicPopup, $global) {
 			$scope.$on('$ionicView.enter', function(viewEvent) {
 				var user = UserService.User();
+
+				EventService.Categories(UserService.Token()).then(function(data) {
+					console.log('[MainCtrl] EventService Categories', data);
+					$scope.categories = data.data;
+				});
+
 				$scope.show = {
 					events: false,
 					friends: false,
@@ -65,6 +71,28 @@
 					//-- TODO: Add notification to Followers. Maybe.
 				});
 			} //-- end $global.socket() check
+
+			$scope.events = function(my_catId) {
+				console.log('[MainCtrl::events()] getting events for ' + my_catId);
+
+				var map = {
+					coords: {
+						latitude: MapService.Map().getBounds()._northEast.lat,
+						longitude: MapService.Map().getBounds()._northEast.lng
+					}
+				};
+
+				EventfulService.Search(map, {
+					category: my_catId
+				}).then(function(data) {
+					console.log(data.data.events);
+				});
+
+				//-- Look up services for category
+				//-- {id: 'foo', category: 'Foo', service: [{id: 'eventful', map: 'foobar'}, {id: 'groupon', map: 'foobr'}]}
+				//-- For each service, use corresponding api and category map
+				//-- Eventful: http://api.eventful.com/json/events/search?app_key=fvB6CnMq97xZBXLL&category=art,music&location=41.312629038747794,-81.08150482177734&within=20
+			};
 
 			$scope.follow = function(my_followUserId) {
 				UserService.Follow(my_followUserId).then(function(data) {

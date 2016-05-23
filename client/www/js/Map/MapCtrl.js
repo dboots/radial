@@ -3,8 +3,10 @@
 
 	angular.module('app.controllers')
 		.controller('MapCtrl', function($scope, $ionicPopup, $ionicSideMenuDelegate, $ionicHistory, EventfulService, PlaceService, $global, $state, MapService, UserService, EventService) {
-			$scope.$on('$ionicView.enter', function(e){
+			$scope.$on('$ionicView.enter', function(e) {
 				$ionicSideMenuDelegate.canDragContent(false);
+
+				$scope.user = UserService.User();
 
 				if (UserService.User() === null) {
 					$state.go('resume');
@@ -56,14 +58,22 @@
 							data.map.on('moveend', function(e) {
 								var map = {
 									coords: {
-										latitude: MapService.Map().getBounds()._northEast.lat,
-										longitude: MapService.Map().getBounds()._northEast.lng
+										latitude: MapService.Map().getCenter().lat,
+										longitude: MapService.Map().getCenter().lng
 									}
 								};
 
-								console.log(map);
+								console.log(MapService.Map().getCenter());
 
 								EventfulService.Search(map).then(function(data) {
+									$scope.user.events = data.data.events.event.sort(function(a, b){
+										if (a.title > b.title)
+											return 1;
+										if (a.title < b.title)
+											return -1;
+										return 0;
+									});
+
 									for(var i = 0, len = data.data.events.event.length; i < len; i++) {
 										var evt = data.data.events.event[i];
 										var curr_event = {

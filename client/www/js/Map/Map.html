@@ -1,5 +1,11 @@
 <ion-view view-title="Map">
 	<ion-content>
-		<div id="map" data-tap-disabled="true"></div>
+		<div ui-view="map" id="map" data-tap-disabled="true"></div>
+		<div ui-view="events" class="main-events">
+			<div ng-repeat="event in user.events">
+				{{event.title}}<br />
+				{{event.latitude}}, {{event.longitude}}
+			</div>
+		</div>
 	</ion-content>
 </ion-view>

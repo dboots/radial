@@ -23,12 +23,17 @@
 					_plottedEvents.push(my_event);
 				},
 
-				Search: function(my_location, my_query) {
+				Search: function(my_location, my_opts) {
 					var url_appkey = 'app_key=' + _key;
 					var url_location = 'location=' + my_location.coords.latitude + ',' + my_location.coords.longitude;
 
+					for (var prop in my_opts) {
+						url_location += '&' + prop + '=' + my_opts[prop];
+					}
 
-					var proxy = 'http://Dons-MacBook-Pro.local:1337/';
+
+					console.log('[EventfulService Search]', $global.config('local'));
+					var proxy = ($global.config('local')) ? 'http://Dons-MBP:1337/' : 'http://';
 					var url = proxy + 'api.eventful.com/json/events/search?' + url_appkey + '&' + url_location + '&within=' + _within;
 
 					//var url = 'http://api.eventful.com/json/events/search?' + url_appkey + '&' + url_location + '&within=' + _within;

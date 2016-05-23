@@ -39,8 +39,8 @@
 						
 								<div class="nav-item-main">
 									<div class="nav-item-main-title" ng-click="show.events = !show.events"><span ng-class="{'ion-arrow-down-b': show.events, 'ion-arrow-right-b': !show.events}" class="icon"></span>Events</div>
-									<div class="nav-item-sub" ng-show="show.events">
-										<div class="nav-item-sub-item">TBD</div>
+									<div class="nav-item-sub" ng-show="show.events" ng-repeat="category in categories">
+										<div ng-click="events(category.id)" class="nav-item-sub-item">{{category.category}}</div>
 									</div>
 								</div>
 

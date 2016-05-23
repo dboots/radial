@@ -216,6 +216,7 @@
 
 						var marker = L.marker(my_latLng, {icon: icon});
 
+						
 						marker.on('click', function(e) {
 							MapService.EventClick(my_event);
 						});
