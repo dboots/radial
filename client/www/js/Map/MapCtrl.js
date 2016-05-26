@@ -2,25 +2,36 @@
 	'use strict';
 
 	angular.module('app.controllers')
-		.controller('MapCtrl', function($scope, $ionicPopup, $ionicSideMenuDelegate, $ionicHistory, EventfulService, PlaceService, $global, $state, MapService, UserService, EventService) {
+		.controller('MapCtrl', function($scope, $ionicPopup, $ionicSideMenuDelegate, $global, $state, EventProviderService, MapService, UserService, EventService) {
 			$scope.$on('$ionicView.enter', function(e) {
 				$ionicSideMenuDelegate.canDragContent(false);
 
-				$scope.user = UserService.User();
+				var user = UserService.User();
+				var map = MapService.Map();
+				var epSrv = EventProviderService;
 
 				if (UserService.User() === null) {
 					$state.go('resume');
 				} else {
-					console.log('[MapCtrl.js] MapService.Map() ', MapService.Map());
-					if (MapService.Map() === null) {
-						MapService.InitMap().then(function(data) {
+					if (map === null) {
+						MapService.Init().then(function(result) {
+							epSrv.providers().then(function(data) {
+								angular.forEach(data, function(i, v) {
+									epSrv.get(i, MapService.Location().coords, {app_key: i.key}).then(function(data) {
+										
+										//-- TODO: Update EventProviderService to convert into valid Event objects before returning
+										//-- Replace events in [provider] events array
+										//-- i.e. events[eventful] = data.data.events.event
+									});
+								});
+							});
+							/*
 							var map = {
 								coords: {
 									latitude: MapService.Map().getBounds()._northEast.lat,
 									longitude: MapService.Map().getBounds()._northEast.lng
 								}
 							};
-
 							EventfulService.Search(map).then(function(data) {
 
 								for(var i = 0, len = data.data.events.event.length; i < len; i++) {
@@ -43,57 +54,25 @@
 									}
 								}
 							});
+							*/
 
-							MapService.PlotEvents(UserService.User());
-							$scope.init = true;
+							MapService.PlotEvents(user);
 
 							//-- Add new event to the map
-							data.map.on('click', function(e) {
+							result.map.on('click', function(e) {
 								//-- Store map coords within EventService
 								EventService.Latlng(e.latlng);
 								$state.go('main.eventAdd');
 							});
 
 							//-- Show search results when moving map
-							data.map.on('moveend', function(e) {
-								var map = {
-									coords: {
-										latitude: MapService.Map().getCenter().lat,
-										longitude: MapService.Map().getCenter().lng
-									}
+							result.map.on('moveend', function(e) {
+								var location = {
+									latitude: this.getCenter().lat,
+									longitude: this.getCenter().lng
 								};
 
-								console.log(MapService.Map().getCenter());
-
-								EventfulService.Search(map).then(function(data) {
-									$scope.user.events = data.data.events.event.sort(function(a, b){
-										if (a.title > b.title)
-											return 1;
-										if (a.title < b.title)
-											return -1;
-										return 0;
-									});
-
-									for(var i = 0, len = data.data.events.event.length; i < len; i++) {
-										var evt = data.data.events.event[i];
-										var curr_event = {
-											latitude: evt.latitude,
-											longitude: evt.longitude,
-											age: 0
-										};
-
-										console.log('[MapCtrl] IsAdded', EventfulService.IsAdded(evt));
-										if (!EventfulService.IsAdded(evt)) {
-											console.log('[MapCtrl] Adding event: ' + evt.title + ' @ ' + evt.venue_name, evt);
-											EventfulService.AddEvent(evt);
-											MapService.PlotEvent(curr_event);
-										} else {
-											console.log('[MapCtrl] Event already added', evt);
-										}
-									}
-
-									console.log('****** SEARCH COMPLETE ******');
-								});
+								console.log('[MapCtrl] location', location);
 							});
 						});
 					}
